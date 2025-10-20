@@ -17,6 +17,8 @@ export default function Map() {
   const [targetStation, setTargetStation] = useState(null);
   const [selectingStart, setSelectingStart] = useState(true);
 
+  const [resetTrigger, setResetTrigger] = useState(0);
+
   // SVG base coordinate system (from your map.svg viewBox)
   const ORIGINAL_WIDTH = 841.89;
   const ORIGINAL_HEIGHT = 841.89;
@@ -96,6 +98,7 @@ export default function Map() {
         <TripPlannerBox
           selectedStartStation={startStation}
           selectedTargetStation={targetStation}
+          resetTrigger={resetTrigger}
         />
       </div>
 
@@ -182,6 +185,7 @@ export default function Map() {
               onClick={() => {
                 setStartStation(null);
                 setTargetStation(null);
+                setResetTrigger((prev) => prev + 1);
               }}
               className="px-3 py-2 rounded-lg bg-black/60 text-white hover:bg-black/80 active:scale-95"
             >

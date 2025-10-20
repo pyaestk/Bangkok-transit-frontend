@@ -1,19 +1,49 @@
 import { useState, useEffect } from "react";
-import LinesDropdown from "./LinesDropdown";
+import LinesDropDown from "./LinesDropdown";
+import PreferencesDropdown from "./PreferencesDropDown";
 import { useShortestPath } from "../../hooks/useShortestPath";
+import { useLongestPath } from "../../hooks/useLongestPath";
 // import { ArrowDown } from "lucide-react"; // optional, for visual arrows
 
 export default function TripPlannerBox({
   selectedStartStation,
   selectedTargetStation,
+  resetTrigger,
 }) {
   const [startStation, setStartStation] = useState("");
   const [startStationCode, setStartStationCode] = useState("");
   const [targetStation, setTargetStation] = useState("");
   const [targetStationCode, setTargetStationCode] = useState("");
   const [showResult, setShowResult] = useState(false);
+  const [preference, setPreference] = useState("Shortest");
 
-  const { pathData, isLoading, error, getShortestPath } = useShortestPath();
+  useEffect(() => {
+    setStartStation("");
+    setStartStationCode("");
+    setTargetStation("");
+    setTargetStationCode("");
+    setPreference("Shortest");
+    setShowResult(false);
+  }, [resetTrigger]);
+
+  const {
+    pathData: shortestData,
+    isLoading: isShortestLoading,
+    error: shortestError,
+    getShortestPath,
+  } = useShortestPath();
+
+  const {
+    pathData: longestData,
+    isLoading: isLongestLoading,
+    error: longestError,
+    getLongestPath,
+  } = useLongestPath();
+
+  // Unified state selection
+  const isLoading = isShortestLoading || isLongestLoading;
+  const error = shortestError || longestError;
+  const pathData = preference === "Longest" ? longestData : shortestData;
 
   // Sync with map clicks
   useEffect(() => {
@@ -35,7 +65,11 @@ export default function TripPlannerBox({
       alert("Please select both start and target stations.");
       return;
     }
-    await getShortestPath(startStationCode, targetStationCode);
+    if (preference === "Longest") {
+      await getLongestPath(startStationCode, targetStationCode);
+    } else {
+      await getShortestPath(startStationCode, targetStationCode);
+    }
   };
 
   useEffect(() => {
@@ -50,7 +84,7 @@ export default function TripPlannerBox({
     <div className="border border-white/10 rounded-2xl bg-gradient-to-b from-gray-800 to-gray-900 shadow-lg w-full max-h-[80vh] text-white flex flex-col transition-all duration-300">
       {!showResult ? (
         // --- TRIP PLANNER VIEW ---
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="flex-1 overflow-visible p-4">
           <h2 className="text-lg font-bold mb-3 mx-1">Trip Planner</h2>
 
           <label className="block mb-2 mx-1 text-sm">From</label>
@@ -59,8 +93,7 @@ export default function TripPlannerBox({
               startStation + (startStationCode ? ` - ${startStationCode}` : "")
             }
             type="text"
-            className="w-full text-sm px-3 py-2 rounded-lg bg-black/30 border border-white/10"
-            readOnly
+            className="w-full text-sm px-3 py-2 rounded-lg bg-black/30 border border-white/10 focus:outline-none"
           />
 
           <label className="block mx-1 mt-3 mb-2 text-sm">To</label>
@@ -70,18 +103,22 @@ export default function TripPlannerBox({
               (targetStationCode ? ` - ${targetStationCode}` : "")
             }
             type="text"
-            className="w-full text-sm px-3 py-2 rounded-lg bg-black/30 border border-white/10"
-            readOnly
+            className="w-full text-sm px-3 py-2 rounded-lg bg-black/30 border border-white/10 focus:outline-none"
+            // readOnly
           />
 
           <div className="flex flex-row space-x-3 justify-between my-3">
             <div className="flex-1">
               <label className="block mx-1 mb-2 text-sm">Preferences</label>
-              <LinesDropdown />
+              {/* <LinesDropdown /> */}
+              <PreferencesDropdown
+                selectedPreference={preference}
+                onChange={(value) => setPreference(value)}
+              />
             </div>
           </div>
 
-          <div className="flex flex-wrap space-x-3 mt-4 justify-between text-sm">
+          <div className="flex flex-wrap space-x-3 mt-7 justify-between text-sm">
             <button
               onClick={handlePlanRoute}
               disabled={isLoading}
@@ -121,13 +158,20 @@ export default function TripPlannerBox({
                   <strong>{data.end_station_code}</strong>
                 </p>
                 <p className="text-gray-300 text-xs whitespace-pre-line mt-3">
-                  {data.route_description || ""}
+                  {/* {data.route_description || ""} */}
+                  {(data.route_description || "")
+                    .split(/\n|\\n/)
+                    .map((line, i) => (
+                      <p key={i} className="text-gray-300 text-xs mt-3">
+                        {line}
+                      </p>
+                    ))}
                 </p>
               </div>
 
               <div className="border-t border-white/10 my-2"></div>
 
-              <div className="flex flex-wrap gap-4 text-xs">
+              <div className="flex flex-wrap gap-4 text-xs justify-center">
                 <div>
                   <span className="text-gray-400">Total Stations:</span>{" "}
                   {data.stats?.total_stations}

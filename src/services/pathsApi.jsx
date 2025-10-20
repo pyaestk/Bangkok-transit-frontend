@@ -22,3 +22,23 @@ export async function fetchShortestPath(fromCode, toCode) {
 
   return result; // returns { ok, data, error }
 }
+
+/**
+ * POST /paths/longest
+ * Request longest path between two station codes
+ */
+export async function fetchLongestPath(fromCode, toCode) {
+  const url = `${API_BASE}/paths/longest`;
+
+  const payload = {
+    from_station_code: fromCode,
+    to_station_code: toCode,
+  };
+
+  const result = await fetchJson(url, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+
+  return result; 
+}
