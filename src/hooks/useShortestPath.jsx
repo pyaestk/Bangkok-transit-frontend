@@ -6,6 +6,8 @@ export function useShortestPath() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const resetPath = () => setPathData(null);
+
   async function getShortestPath(fromCode, toCode) {
     setIsLoading(true);
     setError("");
@@ -27,5 +29,6 @@ export function useShortestPath() {
     isLoading,
     error,
     getShortestPath, 
+    resetPath
   };
 }

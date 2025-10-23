@@ -20,20 +20,12 @@ export default function TripPlannerBox({
   const [showResult, setShowResult] = useState(false);
   const [preference, setPreference] = useState("Shortest");
 
-  useEffect(() => {
-    setStartStation("");
-    setStartStationCode("");
-    setTargetStation("");
-    setTargetStationCode("");
-    setPreference("Shortest");
-    setShowResult(false);
-  }, [resetTrigger]);
-
   const {
     pathData: shortestData,
     isLoading: isShortestLoading,
     error: shortestError,
     getShortestPath,
+    resetPath: shortestReset,
   } = useShortestPath();
 
   const {
@@ -41,7 +33,24 @@ export default function TripPlannerBox({
     isLoading: isLongestLoading,
     error: longestError,
     getLongestPath,
+    resetPath: longestReset,
   } = useLongestPath();
+
+  useEffect(() => {
+    setStartStation("");
+    setStartStationCode("");
+    setTargetStation("");
+    setTargetStationCode("");
+    setPreference("Shortest");
+    setShowResult(false);
+
+    // reset path data from hooks
+    if (typeof shortestReset === "function") shortestReset();
+    if (typeof longestReset === "function") longestReset();
+
+    // clear parent map route
+    if (onPathStations) onPathStations([]);
+  }, [resetTrigger]);
 
   // Unified state selection
   const isLoading = isShortestLoading || isLongestLoading;
@@ -142,6 +151,17 @@ export default function TripPlannerBox({
             <button className="flex-1 border border-white/10 px-4 py-2 rounded-lg bg-gray-800 text-white hover:bg-white/10">
               Fare Estimate
             </button>
+            
+            {/* <div className="p-3 rounded-lg bg-black/20 border border-white/10 text-xs text-gray-300 leading-relaxed w-full">
+              <p className="font-semibold text-white mb-1">💡 How to Use:</p>
+              <ul className="list-disc list-inside space-y-1">
+                <li>Click on a station on the map to set your <span className="text-[#32B67A] font-medium">start</span> and <span className="text-red-400 font-medium">destination</span>.</li>
+                <li>After selecting both, choose your <span className="text-white font-medium">preference</span> — <span className="text-[#32B67A] font-medium">Shortest</span> or <span className="text-blue-400 font-medium">Longest</span> route.</li>
+                <li>Press <span className="text-white font-medium">Plan Route</span> to calculate the path between stations.</li>
+                <li>Use <span className="text-white font-medium">Reset Station</span> on the map to start over.</li>
+                <li>Use <span className="text-white font-medium">Zoom</span> (+ / −) and <span className="text-white font-medium">⟳ Reset View</span> to explore the map easily.</li>
+              </ul>
+            </div> */}
           </div>
 
           {error && <p className="text-red-400 mt-3">{error}</p>}

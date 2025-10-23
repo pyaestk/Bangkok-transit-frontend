@@ -15,12 +15,16 @@ export default function Map() {
 
   const [startStation, setStartStation] = useState(null);
   const [targetStation, setTargetStation] = useState(null);
-  const [selectingStart, setSelectingStart] = useState(true);
+  // const [selectingStart, setSelectingStart] = useState(true);
   const [routeStations, setRouteStations] = useState([]);
   const [activeIndex, setActiveIndex] = useState(-1);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [selectedStationForDialog, setSelectedStationForDialog] = useState(null);
+  const [showSelectDialog, setShowSelectDialog] = useState(false);
 
   const [resetTrigger, setResetTrigger] = useState(0);
+
+  const [showHelp, setShowHelp] = useState(false);
 
   // for Size of Map Picture
   const ORIGINAL_WIDTH = 841.89;
@@ -68,29 +72,54 @@ export default function Map() {
     setStartStation(null);
     setTargetStation(null);
     setRouteStations([]);
-    setSelectingStart(true);
+    // setSelectingStart(true);
     setActiveIndex(-1);
     setResetTrigger((prev) => prev + 1); // notify TripPlannerBox
   };
 
   const handleStationClick = (station) => {
-    if (selectingStart) {
-      setStartStation({
-        name_en: station.name_en,
-        station_code: station.station_code,
-        id: station.id,
-      });
-      setSelectingStart(false);
-    } else {
-      setTargetStation({
-        name_en: station.name_en,
-        station_code: station.station_code,
-        id: station.id,
-      });
-      setSelectingStart(true);
-    }
-    setActiveStation(station.id);
+    setSelectedStationForDialog(station);
+    setShowSelectDialog(true);
   };
+
+  // const setAsStartStation = () => {
+  //   if (!selectedStationForDialog) return;
+  //   setStartStation({
+  //     name_en: selectedStationForDialog.name_en,
+  //     station_code: selectedStationForDialog.station_code,
+  //     id: selectedStationForDialog.id,
+  //   });
+  //   setShowSelectDialog(false);
+  // };
+
+  // const setAsTargetStation = () => {
+  //   if (!selectedStationForDialog) return;
+  //   setTargetStation({
+  //     name_en: selectedStationForDialog.name_en,
+  //     station_code: selectedStationForDialog.station_code,
+  //     id: selectedStationForDialog.id,
+  //   });
+  //   setShowSelectDialog(false);
+  // };
+
+  // const handleStationClick = (station) => {
+  //   if (selectingStart) {
+  //     setStartStation({
+  //       name_en: station.name_en,
+  //       station_code: station.station_code,
+  //       id: station.id,
+  //     });
+  //     setSelectingStart(false);
+  //   } else {
+  //     setTargetStation({
+  //       name_en: station.name_en,
+  //       station_code: station.station_code,
+  //       id: station.id,
+  //     });
+  //     setSelectingStart(true);
+  //   }
+  //   setActiveStation(station.id);
+  // };
 
   // for auto animating route
   // useEffect(() => {
@@ -176,12 +205,12 @@ export default function Map() {
             onTransformed={(ctx) => setScale(ctx.state.scale)}
           >
             <TransformComponent>
-              <div className="relative w-full h-auto">
+              <div className="relative w-full h-full">
                 <img
                   ref={imgRef}
                   src="/BangkokTransitMap.png"
                   alt="Bangkok Metro Map"
-                  className="w-full h-auto select-none pointer-events-none bg-white"
+                  className="w-full h-auto select-none pointer-events-none bg-white z-0"
                   draggable={false}
                   onLoad={updateRatios} // run when loaded
                 />
@@ -189,16 +218,17 @@ export default function Map() {
                 {routeStations.length > 0 && (
                   <div className="absolute inset-0 bg-black/40 z-0 transition-opacity duration-300 pointer-events-none" />
                 )}
+
                 {/* --- Main Stations --- */}
                 {stations.map((station) => {
                   const isStart = station.id === startStation?.id;
                   const isTarget = station.id === targetStation?.id;
 
                   const colorClasses = isStart
-                    ? "bg-blue-400 text-black z-30"
+                    ? "bg-[#2acc83] text-black z-30"
                     : isTarget
                     ? "bg-red-400 text-black z-30"
-                    : "bg-transparent border-transparent";
+                    : "bg-transparent z-20";
 
                   return (
                     <div
@@ -206,7 +236,7 @@ export default function Map() {
                       title={station.name_en}
                       onClick={() => handleStationClick(station)}
                       className={`absolute flex items-center justify-center 
-                        sm:w-2 sm:h-2 md:w-2.5 md:h-2.5 xl:w-3.5 xl:h-3.5
+                        w-1.5 h-1.5 md:w-2.5 md:h-2.5 xl:w-3.5 xl:h-3.5
                         text-[2px] sm:text-[2.5px] md:text-[3px] xl:text-[4px]
                         font-semibold rounded-full cursor-pointer select-none 
                         ${colorClasses}`}
@@ -227,7 +257,7 @@ export default function Map() {
                     key={index}
                     title={station.station_code}
                     className="absolute flex items-center justify-center 
-                      sm:w-2 sm:h-2 md:w-2.5 md:h-2.5 xl:w-3.5 xl:h-3.5
+                      w-1.5 h-1.5  md:w-2.5 md:h-2.5 xl:w-3.5 xl:h-3.5
                       text-[2px] sm:text-[2.5px] md:text-[3px] xl:text-[4px]
                       font-semibold rounded-full cursor-default select-none 
                      bg-[#00ff8c] text-black z-20"
@@ -246,7 +276,7 @@ export default function Map() {
                     key={activeIndex}
                     title={routeStations[activeIndex].station_code}
                     className="absolute flex items-center justify-center 
-                       sm:w-2 sm:h-2 md:w-2.5 md:h-2.5 xl:w-3.5 xl:h-3.5
+                      w-1.5 h-1.5  md:w-2.5 md:h-2.5 xl:w-3.5 xl:h-3.5
                       text-[2px] sm:text-[2.5px] md:text-[3px] xl:text-[4px]
                       font-semibold rounded-full border cursor-default select-none
                       bg-red-400 border-red-600 text-black z-30
@@ -263,6 +293,68 @@ export default function Map() {
               </div>
             </TransformComponent>
           </TransformWrapper>
+
+          {/* --- Station Selection Dialog (inside map) --- */}
+          {showSelectDialog && selectedStationForDialog && (
+            <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/60">
+              <div className="relative bg-gradient-to-b from-gray-800 to-gray-900 border border-white/10 rounded-2xl shadow-2xl p-5 w-[85%] sm:w-[65%] md:w-[50%] max-w-[320px] text-white animate-fadeIn">
+                {/* Close button */}
+                <button
+                  onClick={() => setShowSelectDialog(false)}
+                  className="absolute top-2 right-3 text-gray-400 hover:text-white text-lg"
+                >
+                  ✕
+                </button>
+
+                <h3 className="text-sm font-bold mb-2 text-center">
+                  {selectedStationForDialog.name_en}
+                </h3>
+                <p className="text-center text-gray-400 text-sm mb-4">
+                  Station Code:{" "}
+                  <span className="text-white">
+                    {selectedStationForDialog.station_code}
+                  </span>
+                </p>
+
+                <div className="flex flex-col gap-3 text-sm">
+                  <button
+                    onClick={() => {
+                      setStartStation({
+                        name_en: selectedStationForDialog.name_en,
+                        station_code: selectedStationForDialog.station_code,
+                        id: selectedStationForDialog.id,
+                      });
+                      setShowSelectDialog(false);
+                    }}
+                    className="w-full py-2 rounded-lg bg-[#32B67A] hover:bg-[#2acc83] text-white font-semibold active:scale-95"
+                  >
+                    Set as Start Station
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setTargetStation({
+                        name_en: selectedStationForDialog.name_en,
+                        station_code: selectedStationForDialog.station_code,
+                        id: selectedStationForDialog.id,
+                      });
+                      setShowSelectDialog(false);
+                    }}
+                    className="w-full py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white font-semibold active:scale-95"
+                  >
+                    Set as Target Station
+                  </button>
+
+                  <button
+                    onClick={() => setShowSelectDialog(false)}
+                    className="w-full py-2 rounded-lg bg-gray-700 hover:bg-gray-600 text-white active:scale-95"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Zoom Controls */}
           <div className="absolute top-3 right-3 flex flex-col gap-2 z-20">
@@ -283,6 +375,12 @@ export default function Map() {
               className="px-3 py-2 rounded-lg bg-black/60 text-white hover:bg-black/80 active:scale-95"
             >
               ⟳
+            </button>
+            <button
+              onClick={() => setShowHelp(true)}
+              className="px-3 py-2 rounded-lg bg-black/60 text-white text-sm hover:bg-black/80 active:scale-95"
+            >
+              ?
             </button>
           </div>
 
@@ -319,6 +417,65 @@ export default function Map() {
           resetTrigger={resetTrigger}
         />
       </div> */}
+
+      {/* --- Help Popup Modal --- */}
+      {showHelp && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="relative bg-gradient-to-b from-gray-800 to-gray-900 border border-white/10 rounded-2xl shadow-2xl p-5 w-[90%] max-w-md text-white animate-fadeIn">
+            {/* Close button */}
+            <button
+              onClick={() => setShowHelp(false)}
+              className="absolute top-2 right-3 text-gray-400 hover:text-white text-lg"
+            >
+              ✕
+            </button>
+
+            {/* Title */}
+            <h3 className="text-lg font-bold mb-3">
+              💡 How to Use Trip Planner
+            </h3>
+
+            {/* Guide content */}
+            <div className="p-3 rounded-lg bg-black/20 border border-white/10 text-xs text-gray-300 leading-relaxed w-full">
+              <ul className="list-disc list-inside space-y-1">
+                <li>
+                  Click on a station on the map to set your{" "}
+                  <span className="text-[#32B67A] font-medium">start</span> and{" "}
+                  <span className="text-red-400 font-medium">destination</span>.
+                </li>
+                <li>
+                  After selecting both, choose your{" "}
+                  <span className="text-white font-medium">preference</span> —{" "}
+                  <span className="text-[#32B67A] font-medium">Shortest</span>{" "}
+                  or <span className="text-blue-400 font-medium">Longest</span>{" "}
+                  route.
+                </li>
+                <li>
+                  Press{" "}
+                  <span className="text-white font-medium">Plan Route</span> to
+                  calculate the path between stations.
+                </li>
+                <li>
+                  Use{" "}
+                  <span className="text-white font-medium">Reset Station</span>{" "}
+                  on the map to start over.
+                </li>
+                <li>
+                  Use <span className="text-white font-medium">Zoom</span> (+ /
+                  −) and{" "}
+                  <span className="text-white font-medium">⟳ Reset View</span>{" "}
+                  to explore the map easily.
+                </li>
+              </ul>
+            </div>
+
+            <p className="text-xs text-gray-500 mt-3 border-white/10 pt-2">
+              Tip: Try comparing different preferences to explore alternate
+              paths.
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -6,6 +6,8 @@ export function useLongestPath() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const resetPath = () => setPathData(null);
+
   async function getLongestPath(fromCode, toCode) {
     setIsLoading(true);
     setError("");
@@ -27,6 +29,7 @@ export function useLongestPath() {
     isLoading,
     error,
     getLongestPath, 
+    resetPath
   };
 }
 
