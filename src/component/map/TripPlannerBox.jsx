@@ -3,17 +3,20 @@ import LinesDropDown from "./LinesDropdown";
 import PreferencesDropdown from "./PreferencesDropDown";
 import { useShortestPath } from "../../hooks/useShortestPath";
 import { useLongestPath } from "../../hooks/useLongestPath";
+import ResultView from "./ResultBox.jsx";
 // import { ArrowDown } from "lucide-react"; // optional, for visual arrows
 
 export default function TripPlannerBox({
   selectedStartStation,
   selectedTargetStation,
   resetTrigger,
+  onPathStations,
 }) {
   const [startStation, setStartStation] = useState("");
   const [startStationCode, setStartStationCode] = useState("");
   const [targetStation, setTargetStation] = useState("");
   const [targetStationCode, setTargetStationCode] = useState("");
+
   const [showResult, setShowResult] = useState(false);
   const [preference, setPreference] = useState("Shortest");
 
@@ -72,10 +75,18 @@ export default function TripPlannerBox({
     }
   };
 
-  useEffect(() => {
-    if (pathData?.data) setShowResult(true);
-  }, [pathData]);
+  // useEffect(() => {
+  //   if (pathData?.data) setShowResult(true);
+  // }, [pathData]);
 
+  useEffect(() => {
+    if (pathData?.data) {
+      setShowResult(true);
+      if (onPathStations) {
+        onPathStations(pathData.data.stations || []); // send stations to parent
+      }
+    }
+  }, [pathData]);
   const handleBack = () => setShowResult(false);
 
   const data = pathData?.data;
@@ -92,6 +103,7 @@ export default function TripPlannerBox({
             value={
               startStation + (startStationCode ? ` - ${startStationCode}` : "")
             }
+            placeholder="Enter Start Station"
             type="text"
             className="w-full text-sm px-3 py-2 rounded-lg bg-black/30 border border-white/10 focus:outline-none"
           />
@@ -102,6 +114,7 @@ export default function TripPlannerBox({
               targetStation +
               (targetStationCode ? ` - ${targetStationCode}` : "")
             }
+            placeholder="Enter Target Station"
             type="text"
             className="w-full text-sm px-3 py-2 rounded-lg bg-black/30 border border-white/10 focus:outline-none"
             // readOnly
@@ -135,88 +148,7 @@ export default function TripPlannerBox({
         </div>
       ) : (
         // --- RESULT VIEW ---
-        <div className="flex flex-col flex-1 overflow-hidden">
-          <div className="flex justify-between items-center p-4 border-b border-white/10">
-            <h2 className="text-lg font-bold">Route Summary</h2>
-            <button
-              onClick={handleBack}
-              className="border border-white/10 px-3 py-1 rounded-lg bg-gray-700 hover:bg-gray-600 text-white text-sm"
-            >
-              Back
-            </button>
-          </div>
-
-          {data ? (
-            <div className="flex-1 overflow-y-auto p-4 text-sm space-y-3">
-              <div className="space-y-1">
-                <p>
-                  <span className="text-gray-400">From:</span>{" "}
-                  <strong>{data.start_station_code}</strong>
-                </p>
-                <p>
-                  <span className="text-gray-400">To:</span>{" "}
-                  <strong>{data.end_station_code}</strong>
-                </p>
-                <p className="text-gray-300 text-xs whitespace-pre-line mt-3">
-                  {/* {data.route_description || ""} */}
-                  {(data.route_description || "")
-                    .split(/\n|\\n/)
-                    .map((line, i) => (
-                      <p key={i} className="text-gray-300 text-xs mt-3">
-                        {line}
-                      </p>
-                    ))}
-                </p>
-              </div>
-
-              <div className="border-t border-white/10 my-2"></div>
-
-              <div className="flex flex-wrap gap-4 text-xs justify-center">
-                <div>
-                  <span className="text-gray-400">Total Stations:</span>{" "}
-                  {data.stats?.total_stations}
-                </div>
-                <div>
-                  <span className="text-gray-400">Transfers:</span>{" "}
-                  {data.stats?.total_transfers}
-                </div>
-                <div>
-                  <span className="text-gray-400">Lines:</span>{" "}
-                  {data.stats?.total_lines}
-                </div>
-              </div>
-
-              <div className="border-t border-white/10 my-2"></div>
-
-              <h3 className="font-semibold mb-2">Step-by-Step Route:</h3>
-
-              <ul className="relative ml-3 border-l border-gray-600 space-y-4">
-                {data.route_steps?.map((step, index) => (
-                  <li key={index} className="pl-4 relative">
-                    {/* timeline dot */}
-                    <span className="absolute -left-[7px] top-1 w-3 h-3 bg-[#32B67A] rounded-full border border-gray-800"></span>
-
-                    <div className="flex flex-col">
-                      <span className="font-semibold text-white text-sm">
-                        {step.action}
-                      </span>
-                      <span className="text-gray-300 text-xs">
-                        {step.station?.name} ({step.station?.code})
-                      </span>
-                      {step.line && (
-                        <span className="inline-block mt-1 w-fit px-2 py-0.5 rounded bg-gray-700 text-[10px] text-gray-200">
-                          Line: {step.line}
-                        </span>
-                      )}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : (
-            <p className="text-gray-400 p-4">No route data available.</p>
-          )}
-        </div>
+        <ResultView data={data} onBack={handleBack} />
       )}
     </div>
   );

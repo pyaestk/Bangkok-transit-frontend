@@ -16,10 +16,13 @@ export default function Map() {
   const [startStation, setStartStation] = useState(null);
   const [targetStation, setTargetStation] = useState(null);
   const [selectingStart, setSelectingStart] = useState(true);
+  const [routeStations, setRouteStations] = useState([]);
+  const [activeIndex, setActiveIndex] = useState(-1);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const [resetTrigger, setResetTrigger] = useState(0);
 
-  // SVG base coordinate system (from your map.svg viewBox)
+  // for Size of Map Picture
   const ORIGINAL_WIDTH = 841.89;
   const ORIGINAL_HEIGHT = 841.89;
 
@@ -53,7 +56,7 @@ export default function Map() {
   }, []);
 
   // --- Reset handler ---
-  const handleReset = () => {
+  const handleResetView = () => {
     if (transformRef.current) {
       transformRef.current.setTransform(0, 0, 1);
       transformRef.current.centerView(1);
@@ -61,11 +64,15 @@ export default function Map() {
     }
   };
 
-  // --- Handle station click ---
-  // const handleStationClick = (station) => {
-  //   console.log("Clicked station:", station);
-  //   setSelectedStation(station);
-  // };
+  const handleStationReset = () => {
+    setStartStation(null);
+    setTargetStation(null);
+    setRouteStations([]);
+    setSelectingStart(true);
+    setActiveIndex(-1);
+    setResetTrigger((prev) => prev + 1); // notify TripPlannerBox
+  };
+
   const handleStationClick = (station) => {
     if (selectingStart) {
       setStartStation({
@@ -82,6 +89,48 @@ export default function Map() {
       });
       setSelectingStart(true);
     }
+    setActiveStation(station.id);
+  };
+
+  // for auto animating route
+  // useEffect(() => {
+  //   if (routeStations.length === 0) {
+  //     setActiveIndex(-1);
+  //     return;
+  //   }
+
+  //   let i = 0;
+  //   setActiveIndex(0);
+
+  //   const interval = setInterval(() => {
+  //     i++;
+  //     if (i < routeStations.length) {
+  //       setActiveIndex(i);
+  //     } else {
+  //       clearInterval(interval);
+  //     }
+  //   }, 300); // delay per station (adjust speed here)
+
+  //   return () => clearInterval(interval);
+  // }, [routeStations]);
+
+  // --- Manual route animation start ---
+  const startAnimation = () => {
+    if (routeStations.length === 0 || isAnimating) return;
+
+    setIsAnimating(true);
+    setActiveIndex(0);
+
+    let i = 0;
+    const interval = setInterval(() => {
+      i++;
+      if (i < routeStations.length) {
+        setActiveIndex(i);
+      } else {
+        clearInterval(interval);
+        setIsAnimating(false);
+      }
+    }, 300); // 300ms per station
   };
 
   if (isLoading)
@@ -89,27 +138,30 @@ export default function Map() {
   if (error)
     return <div className="text-red-400 p-4">Failed to load: {error}</div>;
 
-  // --- Render ---
   return (
-    <div className="flex flex-col md:flex-row gap-5 text-white w-full">
+    <div className="xl:container xl:mx-auto flex flex-col sm:flex-row gap-5 text-white w-full">
       {/* Sidebar */}
-      <div className="w-full md:w-80">
-        {/* <FiltersCard selectedStation={selectedStation} /> */}
+      <div className="w-full md:w-80 ">
         <TripPlannerBox
           selectedStartStation={startStation}
           selectedTargetStation={targetStation}
+          onPathStations={setRouteStations}
           resetTrigger={resetTrigger}
         />
       </div>
 
       {/* Map */}
-      <div className="relative border border-white/10 h-[80vh] w-full flex-1 overflow-hidden rounded-2xl bg-gradient-to-b from-gray-800 to-gray-900 shadow-lg text-white">
+      <div className="relative border border-white/10 h-[80vh] w-full flex-1 rounded-2xl bg-gradient-to-b from-gray-800 to-gray-900 shadow-lg text-white">
         <div className="bg-white rounded-lg h-full flex items-center justify-center overflow-hidden relative">
+          {/* --- Dim overlay when route is shown --- */}
+          {routeStations.length > 0 && (
+            <div className="absolute inset-0 bg-black/40 z-0 transition-opacity duration-300 pointer-events-none" />
+          )}
           <TransformWrapper
             ref={transformRef}
             initialScale={1}
             minScale={1}
-            maxScale={4}
+            maxScale={4.5}
             centerOnInit={true}
             limitToBounds={false}
             wheel={{
@@ -129,31 +181,85 @@ export default function Map() {
                   ref={imgRef}
                   src="/BangkokTransitMap.png"
                   alt="Bangkok Metro Map"
-                  className="w-full h-auto select-none pointer-events-none"
+                  className="w-full h-auto select-none pointer-events-none bg-white"
                   draggable={false}
-                  onLoad={updateRatios} // ✅ run when loaded
+                  onLoad={updateRatios} // run when loaded
                 />
+                {/* --- Dim overlay when route is shown --- */}
+                {routeStations.length > 0 && (
+                  <div className="absolute inset-0 bg-black/40 z-0 transition-opacity duration-300 pointer-events-none" />
+                )}
+                {/* --- Main Stations --- */}
+                {stations.map((station) => {
+                  const isStart = station.id === startStation?.id;
+                  const isTarget = station.id === targetStation?.id;
 
-                {/* ✅ Station markers (now aligned on first load too) */}
-                {stations.map((station) => (
+                  const colorClasses = isStart
+                    ? "bg-blue-400 text-black z-30"
+                    : isTarget
+                    ? "bg-red-400 text-black z-30"
+                    : "bg-transparent border-transparent";
+
+                  return (
+                    <div
+                      key={station.id}
+                      title={station.name_en}
+                      onClick={() => handleStationClick(station)}
+                      className={`absolute flex items-center justify-center 
+                        sm:w-2 sm:h-2 md:w-2.5 md:h-2.5 xl:w-3.5 xl:h-3.5
+                        text-[2px] sm:text-[2.5px] md:text-[3px] xl:text-[4px]
+                        font-semibold rounded-full cursor-pointer select-none 
+                        ${colorClasses}`}
+                      style={{
+                        left: `${station.x * xRatio}px`,
+                        top: `${station.y * yRatio}px`,
+                        transform: "translate(-50%, -50%)",
+                      }}
+                    >
+                      {(isStart || isTarget) && station.station_code}
+                    </div>
+                  );
+                })}
+
+                {/* --- Route Stations (from API) --- */}
+                {routeStations.map((station, index) => (
                   <div
-                    key={station.id}
-                    onClick={() => handleStationClick(station)}
-                    className={`absolute w-8 h-8 rounded-full cursor-pointer border-2 ${
-                      station.id === startStation?.id
-                        ? "bg-green-400 border-green-600"
-                        : station.id === targetStation?.id
-                        ? "bg-red-400 border-red-600"
-                        : "bg-transparent border-transparent"
-                    }`}
+                    key={index}
+                    title={station.station_code}
+                    className="absolute flex items-center justify-center 
+                      sm:w-2 sm:h-2 md:w-2.5 md:h-2.5 xl:w-3.5 xl:h-3.5
+                      text-[2px] sm:text-[2.5px] md:text-[3px] xl:text-[4px]
+                      font-semibold rounded-full cursor-default select-none 
+                     bg-[#00ff8c] text-black z-20"
                     style={{
                       left: `${station.x * xRatio}px`,
                       top: `${station.y * yRatio}px`,
-                      transform: `translate(-50%, -50%) scale(${1 / scale})`,
+                      transform: "translate(-50%, -50%)",
                     }}
-                    title={station.name_en}
-                  />
+                  >
+                    {station.station_code.trim()}
+                  </div>
                 ))}
+                {/* Animated "Train" / Traveling Dot */}
+                {activeIndex >= 0 && routeStations[activeIndex] && (
+                  <div
+                    key={activeIndex}
+                    title={routeStations[activeIndex].station_code}
+                    className="absolute flex items-center justify-center 
+                       sm:w-2 sm:h-2 md:w-2.5 md:h-2.5 xl:w-3.5 xl:h-3.5
+                      text-[2px] sm:text-[2.5px] md:text-[3px] xl:text-[4px]
+                      font-semibold rounded-full border cursor-default select-none
+                      bg-red-400 border-red-600 text-black z-30
+                      transition-all duration-300 ease-in-out"
+                    style={{
+                      left: `${routeStations[activeIndex].x * xRatio}px`,
+                      top: `${routeStations[activeIndex].y * yRatio}px`,
+                      transform: "translate(-50%, -50%)",
+                    }}
+                  >
+                    {routeStations[activeIndex].station_code.trim()}
+                  </div>
+                )}
               </div>
             </TransformComponent>
           </TransformWrapper>
@@ -173,27 +279,46 @@ export default function Map() {
               −
             </button>
             <button
-              onClick={handleReset}
+              onClick={handleResetView}
               className="px-3 py-2 rounded-lg bg-black/60 text-white hover:bg-black/80 active:scale-95"
             >
               ⟳
             </button>
           </div>
 
-          <div className="absolute top-3 left-3 flex flex-col gap-2 z-20">
+          <div className="absolute top-3 left-3 flex flex-col gap-2 z-20 text-sm">
             <button
-              onClick={() => {
-                setStartStation(null);
-                setTargetStation(null);
-                setResetTrigger((prev) => prev + 1);
-              }}
+              onClick={handleStationReset}
               className="px-3 py-2 rounded-lg bg-black/60 text-white hover:bg-black/80 active:scale-95"
             >
               Reset Station
             </button>
+
+            {routeStations.length > 0 && (
+              <button
+                onClick={startAnimation}
+                disabled={isAnimating || routeStations.length === 0}
+                className={`px-3 py-2 rounded-lg ${
+                  isAnimating || routeStations.length === 0
+                    ? " bg-black/60 cursor-not-allowed"
+                    : " bg-black/60 active:scale-95"
+                } text-white`}
+              >
+                {isAnimating ? "Animating..." : "Start "}
+              </button>
+            )}
           </div>
         </div>
       </div>
+
+      {/* <div className="w-full md:w-70 ">
+        <TripPlannerBox
+          selectedStartStation={startStation}
+          selectedTargetStation={targetStation}
+          onPathStations={setRouteStations}
+          resetTrigger={resetTrigger}
+        />
+      </div> */}
     </div>
   );
 }
