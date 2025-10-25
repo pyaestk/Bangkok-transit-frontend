@@ -17,14 +17,12 @@ export default function FiltersCard({selectedStation}) {
   }, [selectedStation]);
 
   const handleLineChange = (line) => {
-    console.log("Selected Line:", line); // for now, just log
+    console.log("Selected Line:", line); 
     setSelectedLine(line);
-    // connect backend later
-    // fetch(`/api/stations?line=${line}`)
   };
 
   return (
-    <div className="border border-white/10 p-4 rounded-2xl bg-gradient-to-b from-gray-800 to-gray-900 shadow-lg w-80 text-white">
+    <div className="border border-white/10 p-4 rounded-2xl bg-gradient-to-b from-gray-800 to-gray-900 shadow-lg text-white">
       <h2 className="text-lg font-bold mb-4 mx-1">Filters</h2>
 
       <label className="block mb-2 mx-1 my-4">Lines</label>

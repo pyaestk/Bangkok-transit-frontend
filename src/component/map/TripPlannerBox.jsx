@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import LinesDropDown from "./LinesDropdown";
+import { useState, useEffect, useRef } from "react";
+import { useStations } from "../../hooks/useStations";
 import PreferencesDropdown from "./PreferencesDropDown";
 import { useShortestPath } from "../../hooks/useShortestPath";
 import { useLongestPath } from "../../hooks/useLongestPath";
@@ -20,6 +20,78 @@ export default function TripPlannerBox({
   const [showResult, setShowResult] = useState(false);
   const [preference, setPreference] = useState("Shortest");
 
+  const { stations } = useStations();
+  const [filteredStart, setFilteredStart] = useState([]);
+  const [filteredTarget, setFilteredTarget] = useState([]);
+
+  const startRef = useRef(null);
+  const targetRef = useRef(null);
+
+  // for handling clicking outside of textfield
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (startRef.current && !startRef.current.contains(event.target)) {
+        setFilteredStart([]);
+      }
+      if (targetRef.current && !targetRef.current.contains(event.target)) {
+        setFilteredTarget([]);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // for suggestion box handling
+  const handleStartInput = (e) => {
+    const value = e.target.value;
+    setStartStation(value);
+
+    if (value.trim() === "") {
+      setFilteredStart([]);
+      return;
+    }
+
+    const filtered = stations.filter(
+      (s) =>
+        s.name_en.toLowerCase().includes(value.toLowerCase()) ||
+        s.station_code.toLowerCase().includes(value.toLowerCase())
+    );
+    setFilteredStart(filtered.slice(0, 5)); // limit suggestions
+  };
+
+  const handleSelectStart = (station) => {
+    setStartStation(station.name_en);
+    setStartStationCode(station.station_code);
+    setFilteredStart([]);
+  };
+
+  const handleTargetInput = (e) => {
+    const value = e.target.value;
+    setTargetStation(value);
+
+    if (value.trim() === "") {
+      setFilteredTarget([]);
+      return;
+    }
+
+    const filtered = stations.filter(
+      (s) =>
+        s.name_en.toLowerCase().includes(value.toLowerCase()) ||
+        s.station_code.toLowerCase().includes(value.toLowerCase())
+    );
+    setFilteredTarget(filtered.slice(0, 5));
+  };
+
+  const handleSelectTarget = (station) => {
+    setTargetStation(station.name_en);
+    setTargetStationCode(station.station_code);
+    setFilteredTarget([]);
+  };
+
+  //for hooks
   const {
     pathData: shortestData,
     isLoading: isShortestLoading,
@@ -84,10 +156,6 @@ export default function TripPlannerBox({
     }
   };
 
-  // useEffect(() => {
-  //   if (pathData?.data) setShowResult(true);
-  // }, [pathData]);
-
   useEffect(() => {
     if (pathData?.data) {
       setShowResult(true);
@@ -108,26 +176,59 @@ export default function TripPlannerBox({
           <h2 className="text-lg font-bold mb-3 mx-1">Trip Planner</h2>
 
           <label className="block mb-2 mx-1 text-sm">From</label>
-          <input
-            value={
-              startStation + (startStationCode ? ` - ${startStationCode}` : "")
-            }
-            placeholder="Enter Start Station"
-            type="text"
-            className="w-full text-sm px-3 py-2 rounded-lg bg-black/30 border border-white/10 focus:outline-none"
-          />
+          <div className="relative" ref={startRef}>
+            <input
+              value={startStation}
+              onChange={handleStartInput}
+              placeholder="Enter Start Station"
+              type="text"
+              className="w-full text-sm px-3 py-2 rounded-lg bg-black/30 border border-white/10 focus:outline-none"
+            />
+            {filteredStart.length > 0 && (
+              <ul className="absolute z-10 w-full bg-gray-800 border border-white/10 rounded-lg mt-1 max-h-fit overflow-y-auto">
+                {filteredStart.map((station) => (
+                  <li
+                    key={station.station_code}
+                    onClick={() => handleSelectStart(station)}
+                    className="px-3 py-2 hover:bg-gray-700 cursor-pointer text-sm"
+                  >
+                    {station.name_en} –{" "}
+                    <span className="text-gray-400">
+                      {station.station_code}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
 
+          {/* To Station */}
           <label className="block mx-1 mt-3 mb-2 text-sm">To</label>
-          <input
-            value={
-              targetStation +
-              (targetStationCode ? ` - ${targetStationCode}` : "")
-            }
-            placeholder="Enter Target Station"
-            type="text"
-            className="w-full text-sm px-3 py-2 rounded-lg bg-black/30 border border-white/10 focus:outline-none"
-            // readOnly
-          />
+          <div className="relative" ref={targetRef}>
+            <input
+              value={targetStation}
+              onChange={handleTargetInput}
+              placeholder="Enter Target Station"
+              type="text"
+              className="w-full text-sm px-3 py-2 rounded-lg bg-black/30 border border-white/10 focus:outline-none"
+            />
+            {filteredTarget.length > 0 && (
+              <ul className="absolute z-10 w-full max-h-fit bg-gray-800 border border-white/10 rounded-lg mt-1 overflow-y-auto">
+                {filteredTarget.map((station) => (
+                  <li
+                    key={station.station_code}
+                    onClick={() => handleSelectTarget(station)}
+                    className="px-3 py-2 hover:bg-gray-700 cursor-pointer text-sm"
+                  >
+                    {station.name_en} –{" "}
+                    <span className="text-gray-400">
+                      {station.station_code}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
 
           <div className="flex flex-row space-x-3 justify-between my-3">
             <div className="flex-1">
@@ -151,7 +252,7 @@ export default function TripPlannerBox({
             <button className="flex-1 border border-white/10 px-4 py-2 rounded-lg bg-gray-800 text-white hover:bg-white/10">
               Fare Estimate
             </button>
-            
+
             {/* <div className="p-3 rounded-lg bg-black/20 border border-white/10 text-xs text-gray-300 leading-relaxed w-full">
               <p className="font-semibold text-white mb-1">💡 How to Use:</p>
               <ul className="list-disc list-inside space-y-1">

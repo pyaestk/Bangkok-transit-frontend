@@ -25,7 +25,7 @@ const [selected, setSelected] = useState(selectedPreference || "Shortest");
 
         <MenuItems
           transition
-          className="absolute left-0 z-50 mt-2 w-full origin-top rounded-md bg-gray-950 border border-white/10 shadow-lg focus:outline-none
+          className="absolute left-0 z-50 mt-2 w-full origin-top rounded-md bg-gray-800 border border-white/10 shadow-lg focus:outline-none
             overflow-y-auto transition-all duration-200 ease-out
             scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-800
             data-closed:scale-95 data-closed:opacity-0 data-closed:transform 

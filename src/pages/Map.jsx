@@ -21,6 +21,7 @@ export default function Map() {
   const [isAnimating, setIsAnimating] = useState(false);
   const [selectedStationForDialog, setSelectedStationForDialog] = useState(null);
   const [showSelectDialog, setShowSelectDialog] = useState(false);
+  const animationRef = useRef(null);
 
   const [resetTrigger, setResetTrigger] = useState(0);
 
@@ -69,57 +70,28 @@ export default function Map() {
   };
 
   const handleStationReset = () => {
+    if (animationRef.current) {
+      clearInterval(animationRef.current);
+      animationRef.current = null;
+    }
+    setIsAnimating(false);
+    setActiveIndex(-1);
+    setRouteStations([]);
     setStartStation(null);
     setTargetStation(null);
-    setRouteStations([]);
-    // setSelectingStart(true);
-    setActiveIndex(-1);
-    setResetTrigger((prev) => prev + 1); // notify TripPlannerBox
+    setResetTrigger((prev) => prev + 1);
   };
+
+  useEffect(() => {
+    return () => {
+      if (animationRef.current) clearInterval(animationRef.current);
+    };
+  }, []);
 
   const handleStationClick = (station) => {
     setSelectedStationForDialog(station);
     setShowSelectDialog(true);
   };
-
-  // const setAsStartStation = () => {
-  //   if (!selectedStationForDialog) return;
-  //   setStartStation({
-  //     name_en: selectedStationForDialog.name_en,
-  //     station_code: selectedStationForDialog.station_code,
-  //     id: selectedStationForDialog.id,
-  //   });
-  //   setShowSelectDialog(false);
-  // };
-
-  // const setAsTargetStation = () => {
-  //   if (!selectedStationForDialog) return;
-  //   setTargetStation({
-  //     name_en: selectedStationForDialog.name_en,
-  //     station_code: selectedStationForDialog.station_code,
-  //     id: selectedStationForDialog.id,
-  //   });
-  //   setShowSelectDialog(false);
-  // };
-
-  // const handleStationClick = (station) => {
-  //   if (selectingStart) {
-  //     setStartStation({
-  //       name_en: station.name_en,
-  //       station_code: station.station_code,
-  //       id: station.id,
-  //     });
-  //     setSelectingStart(false);
-  //   } else {
-  //     setTargetStation({
-  //       name_en: station.name_en,
-  //       station_code: station.station_code,
-  //       id: station.id,
-  //     });
-  //     setSelectingStart(true);
-  //   }
-  //   setActiveStation(station.id);
-  // };
 
   // for auto animating route
   // useEffect(() => {
@@ -145,21 +117,27 @@ export default function Map() {
 
   // --- Manual route animation start ---
   const startAnimation = () => {
-    if (routeStations.length === 0 || isAnimating) return;
+    if (
+      !Array.isArray(routeStations) ||
+      routeStations.length === 0 ||
+      isAnimating
+    )
+      return;
 
     setIsAnimating(true);
     setActiveIndex(0);
 
     let i = 0;
-    const interval = setInterval(() => {
+    animationRef.current = setInterval(() => {
       i++;
       if (i < routeStations.length) {
         setActiveIndex(i);
       } else {
-        clearInterval(interval);
+        clearInterval(animationRef.current);
+        animationRef.current = null;
         setIsAnimating(false);
       }
-    }, 300); // 300ms per station
+    }, 300);
   };
 
   if (isLoading)
@@ -196,7 +174,7 @@ export default function Map() {
             wheel={{
               disabled: false,
               step: 0.1, // zoom speed per wheel event
-              smoothStep: 0.005, // smoother zooming on trackpads
+              smoothStep: 0.007, // smoother zooming on trackpads
               activationKeys: [], // allow natural gestures (no modifier keys)
               limitsOnWheel: true, // prevent overscaling
             }}
@@ -275,12 +253,14 @@ export default function Map() {
                   <div
                     key={activeIndex}
                     title={routeStations[activeIndex].station_code}
-                    className="absolute flex items-center justify-center 
+                    className={`absolute flex items-center justify-center 
                       w-1.5 h-1.5  md:w-2.5 md:h-2.5 xl:w-3.5 xl:h-3.5
                       text-[2px] sm:text-[2.5px] md:text-[3px] xl:text-[4px]
                       font-semibold rounded-full border cursor-default select-none
                       bg-red-400 border-red-600 text-black z-30
-                      transition-all duration-300 ease-in-out"
+                      transition-all duration-300  ${
+                        isAnimating ? "opacity-100" : "opacity-0"
+                      }`}
                     style={{
                       left: `${routeStations[activeIndex].x * xRatio}px`,
                       top: `${routeStations[activeIndex].y * yRatio}px`,
@@ -410,11 +390,8 @@ export default function Map() {
       </div>
 
       {/* <div className="w-full md:w-70 ">
-        <TripPlannerBox
-          selectedStartStation={startStation}
-          selectedTargetStation={targetStation}
-          onPathStations={setRouteStations}
-          resetTrigger={resetTrigger}
+        <FiltersCard 
+          selectedStation={null}
         />
       </div> */}
 
