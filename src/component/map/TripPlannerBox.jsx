@@ -238,7 +238,7 @@ export default function TripPlannerBox({
               className="w-full text-sm px-3 py-2 rounded-lg bg-black/30 border border-white/10 focus:outline-none"
             />
             {filteredTarget.length > 0 && (
-              <ul className="absolute z-10 w-full max-h-fit bg-gray-800 border border-white/10 rounded-lg mt-1 overflow-y-auto">
+              <ul className="absolute z-30 w-full max-h-fit bg-gray-800 border border-white/10 rounded-lg mt-1 overflow-y-auto">
                 {filteredTarget.map((station) => (
                   <li
                     key={station.station_code}

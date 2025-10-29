@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
-import FiltersCard from "../component/map/FiltersCard";
 import { useStations } from "../hooks/useStations";
 import TripPlannerBox from "../component/map/TripPlannerBox";
 
@@ -364,7 +363,7 @@ export default function Map() {
             </button>
           </div>
 
-          <div className="absolute top-3 left-3 flex flex-col gap-2 z-20 text-sm">
+          <div className="absolute top-3 left-3 flex flex-col gap-2 text-sm">
             <button
               onClick={handleStationReset}
               className="px-3 py-2 rounded-lg bg-black/60 text-white hover:bg-black/80 active:scale-95"
