@@ -1,19 +1,19 @@
 import { useState } from "react";
-import { fetchShortestPath } from "../services/pathsApi";
+import { fetchLongestPath } from "../services/pathsApi";
 
-export function useShortestPath() {
+export function useLongestPath() {
   const [pathData, setPathData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
   const resetPath = () => setPathData(null);
 
-  async function getShortestPath(fromCode, toCode) {
+  async function getLongestPath(fromCode, toCode) {
     setIsLoading(true);
     setError("");
     setPathData(null);
 
-    const result = await fetchShortestPath(fromCode, toCode);
+    const result = await fetchLongestPath(fromCode, toCode);
 
     if (result.ok) {
       setPathData(result.data);
@@ -28,7 +28,8 @@ export function useShortestPath() {
     pathData,
     isLoading,
     error,
-    getShortestPath, 
+    getLongestPath, 
     resetPath
   };
 }
+
