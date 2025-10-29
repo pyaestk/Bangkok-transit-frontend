@@ -21,8 +21,8 @@ export default function NavBar() {
   ];
 
   return (
-    <nav className="sticky top-0 z-50 bg-[#0a0a0aa9] border-b border-white/10 backdrop-blur-[50px]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav className="sticky top-0 z-50 bg-[#0a0a0aa9] border-b border-white/10 backdrop-blur-[10px]">
+      <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Brand */}
           <div className="text-white text-xl font-bold">Bangkok Transit</div>

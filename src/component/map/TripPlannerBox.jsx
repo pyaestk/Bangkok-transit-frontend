@@ -3,6 +3,8 @@ import { useStations } from "../../hooks/useStations";
 import PreferencesDropdown from "./PreferencesDropDown";
 import { useShortestPath } from "../../hooks/useShortestPath";
 import { useLongestPath } from "../../hooks/useLongestPath";
+import { useCheapestPath } from "../../hooks/useCheapestPath";
+import { useFarePath } from "../../hooks/useFarePath.jsx";
 import ResultView from "./ResultBox.jsx";
 // import { ArrowDown } from "lucide-react"; // optional, for visual arrows
 
@@ -59,7 +61,7 @@ export default function TripPlannerBox({
         s.name_en.toLowerCase().includes(value.toLowerCase()) ||
         s.station_code.toLowerCase().includes(value.toLowerCase())
     );
-    setFilteredStart(filtered.slice(0, 5)); // limit suggestions
+    setFilteredStart(filtered.slice(0, 10)); // limit suggestions
   };
 
   const handleSelectStart = (station) => {
@@ -108,6 +110,23 @@ export default function TripPlannerBox({
     resetPath: longestReset,
   } = useLongestPath();
 
+  const {
+    pathData: cheapestData,
+    isLoading: isCheapestLoading,
+    error: cheapestError,
+    getCheapestPath,
+    resetPath: cheapestReset,
+  } = useCheapestPath();
+
+  
+  const {
+    pathData: fareData,
+    isLoading: isFareLoading,
+    error: fareError,
+    getFarePath,
+    resetPath: fareReset,
+  } = useFarePath();
+
   useEffect(() => {
     setStartStation("");
     setStartStationCode("");
@@ -119,15 +138,17 @@ export default function TripPlannerBox({
     // reset path data from hooks
     if (typeof shortestReset === "function") shortestReset();
     if (typeof longestReset === "function") longestReset();
+    if (typeof longestReset === "function") cheapestReset();
+    if (typeof longestReset === "function") fareReset();
 
     // clear parent map route
     if (onPathStations) onPathStations([]);
   }, [resetTrigger]);
 
   // Unified state selection
-  const isLoading = isShortestLoading || isLongestLoading;
-  const error = shortestError || longestError;
-  const pathData = preference === "Longest" ? longestData : shortestData;
+  const isLoading = isShortestLoading || isLongestLoading || isCheapestLoading || isFareLoading;
+  const error = shortestError || longestError || cheapestError || fareError;
+  const pathData = preference === "Longest" ? longestData : preference === "Cheapest" ? cheapestData : preference == "Fare" ? fareData : shortestData;
 
   // Sync with map clicks
   useEffect(() => {
@@ -151,6 +172,10 @@ export default function TripPlannerBox({
     }
     if (preference === "Longest") {
       await getLongestPath(startStationCode, targetStationCode);
+    } if (preference === "Cheapest") {
+      await getCheapestPath(startStationCode, targetStationCode);
+    } if (preference === "Fare") {
+      await getFarePath(startStationCode, targetStationCode);
     } else {
       await getShortestPath(startStationCode, targetStationCode);
     }
@@ -249,9 +274,9 @@ export default function TripPlannerBox({
             >
               {isLoading ? "Planning..." : "Plan Route"}
             </button>
-            <button className="flex-1 border border-white/10 px-4 py-2 rounded-lg bg-gray-800 text-white hover:bg-white/10">
+            {/* <button className="flex-1 border border-white/10 px-4 py-2 rounded-lg bg-gray-800 text-white hover:bg-white/10">
               Fare Estimate
-            </button>
+            </button> */}
 
             {/* <div className="p-3 rounded-lg bg-black/20 border border-white/10 text-xs text-gray-300 leading-relaxed w-full">
               <p className="font-semibold text-white mb-1">💡 How to Use:</p>

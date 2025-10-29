@@ -51,6 +51,10 @@ export default function ResultView({ data, onBack }) {
             {data.stats?.total_stations}
           </div>
           <div>
+            <span className="text-gray-400">Fare:</span>{" "}
+            {data.fare_total} THB
+          </div>
+          <div>
             <span className="text-gray-400">Transfers:</span>{" "}
             {data.stats?.total_transfers}
           </div>
@@ -84,9 +88,14 @@ export default function ResultView({ data, onBack }) {
                   {step.station?.name} ({step.station?.code})
                 </span>
                 {step.line && (
-                  <span className="inline-block mt-1 w-fit px-2 py-0.5 rounded bg-gray-700 text-[10px] text-white" style={{
-                  backgroundColor: lineColors[step.line] || "#32B67A",
-                }}>
+                  <span
+                    className={`inline-block mt-1 w-fit px-2 py-0.5 rounded bg-gray-700 text-[10px] ${
+                      step.line === "MRT Yellow Line Monorail" || step.line == "MRT Pink Line Monorail" || step.line == "BTS Gold Line" ? "text-black" : "text-white"
+                    }`}
+                    style={{
+                      backgroundColor: lineColors[step.line] || "#32B67A",
+                    }}
+                  >
                     Line: {step.line}
                   </span>
                 )}

@@ -1,79 +1,112 @@
-import { useState, useEffect } from "react";
-import LinesDropdown from "./LinesDropdown"
+import { useState, useEffect, useRef } from "react";
+import LinesDropdown from "./LinesDropdown";
+import { useStations } from "../../hooks/useStations";
 
-export default function FiltersCard({selectedStation}) {
+export default function FiltersCard({ selectedStation, onSelectStation }) {
   const [selectedLine, setSelectedLine] = useState("All");
   const [searchValue, setSearchValue] = useState("");
+  const [filteredStations, setFilteredStations] = useState([]);
+  const { stations } = useStations();
+  const filterRef = useRef(null);
 
+  // Close suggestion box when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (filterRef.current && !filterRef.current.contains(event.target)) {
+        setFilteredStations([]);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Autofill from map selection
   useEffect(() => {
     if (selectedStation) {
       const lineName = selectedStation.line?.name_en || "All";
       const stationName = selectedStation.name_en || selectedStation.name || "";
-
-      // auto-fill both fields
       setSelectedLine(lineName);
       setSearchValue(stationName);
     }
   }, [selectedStation]);
 
+  // Line dropdown handler
   const handleLineChange = (line) => {
-    console.log("Selected Line:", line); 
     setSelectedLine(line);
+    if (line === "All") {
+      setFilteredStations([]);
+      return;
+    }
+    const filtered = stations.filter((s) => s.line?.name_en === line);
+    setFilteredStations(filtered);
+  };
+
+  // Search input handler (filters further)
+  const handleSearch = (e) => {
+    const value = e.target.value;
+    setSearchValue(value);
+
+    let base = selectedLine === "All"
+      ? stations
+      : stations.filter((s) => s.line?.name_en === selectedLine);
+
+    const filtered = base.filter((s) =>
+      s.name_en.toLowerCase().includes(value.toLowerCase())
+    );
+    setFilteredStations(filtered.slice(0, 15));
+  };
+
+  // Select station handler
+  const handleSelect = (station) => {
+    setSearchValue(station.name_en);
+    setFilteredStations([]);
+    if (onSelectStation) onSelectStation(station);
   };
 
   return (
     <div className="border border-white/10 p-4 rounded-2xl bg-gradient-to-b from-gray-800 to-gray-900 shadow-lg text-white">
-      <h2 className="text-lg font-bold mb-4 mx-1">Filters</h2>
+      <h2 className="text-lg font-bold mb-4 mx-1">Filter</h2>
 
-      <label className="block mb-2 mx-1 my-4">Lines</label>
+      {/* Line selection */}
+      <label className="block mb-2 mx-1">Line</label>
       <LinesDropdown onChange={handleLineChange} selectedLine={selectedLine} />
 
-      {/* Search station */}
-      <label className="block my-4 mx-1">Search station</label>
-      <input
-        type="text"
-        value={searchValue} //controlled input
-        onChange={(e) => setSearchValue(e.target.value)}
-        placeholder="Type a station…"
-        className="w-full text-sm px-3 py-2 rounded-lg bg-black/30 border border-white/10 placeholder-gray-400 focus:outline-none"
-      />
-
-      {/* Buttons */}
-      <div className="flex flex-col space-y-2 mt-4 text-sm">
-        <button className="border border-white/10 px-4 py-2 rounded-lg bg-gray-800 text-white hover:bg-white/10">
-          Apply
-        </button>
-        <button className="border border-white/10 px-4 py-2 rounded-lg bg-gray-800 text-white hover:bg-white/10">
-          Show In Planner
-        </button>
+      {/* Search station input */}
+      <label className="block mt-4 mb-2 mx-1">Search Station</label>
+      <div className="relative" ref={filterRef}>
+        <input
+          type="text"
+          value={searchValue}
+          onChange={handleSearch}
+          placeholder="Type a station name..."
+          className="w-full text-sm px-3 py-2 rounded-lg bg-black/30 border border-white/10 placeholder-gray-400 focus:outline-none"
+        />
+        {filteredStations.length > 0 && (
+          <ul className="absolute z-10 w-full bg-gray-800 border border-white/10 rounded-lg mt-1 max-h-[250px] overflow-y-auto">
+            {filteredStations.map((station) => (
+              <li
+                key={station.station_code}
+                onClick={() => handleSelect(station)}
+                className="px-3 py-2 hover:bg-gray-700 cursor-pointer text-sm"
+              >
+                {station.name_en} –{" "}
+                <span className="text-gray-400">
+                  {station.line?.name_en || "Unknown Line"}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
-      {/* Line Pills */}
-      <div className="flex flex-wrap gap-2 mt-6 mb-4 text-sm">
-        <span className="flex items-center px-3 py-1 rounded-full bg-white/10">
-          <span className="w-4 h-2 rounded-full bg-blue-500 mr-2"></span>
-          Blue
-        </span>
-        <span className="flex items-center px-3 py-1 rounded-full bg-white/10">
-          <span className="w-4 h-2 rounded-full bg-green-500 mr-2"></span>
-          Sukhumvit
-        </span>
-        <span className="flex items-center px-3 py-1 rounded-full bg-white/10">
-          <span className="w-4 h-2 rounded-full bg-green-700 mr-2"></span>
-          Silom
-        </span>
-        <span className="flex items-center px-3 py-1 rounded-full bg-white/10">
-          <span className="w-4 h-2 rounded-full bg-red-500 mr-2"></span>
-          Red
-        </span>
-        <span className="flex items-center px-3 py-1 rounded-full bg-white/10">
-          <span className="w-4 h-2 rounded-full bg-yellow-500 mr-2"></span>
-          Yellow
-        </span>
-        <span className="flex items-center px-3 py-1 rounded-full bg-white/10">
-          <span className="w-4 h-2 rounded-full bg-pink-400 mr-2"></span>
-          Pink
-        </span>
+      {/* Buttons */}
+      <div className="flex flex-col space-y-2 mt-5 text-sm">
+        <button
+          onClick={() => handleLineChange(selectedLine)}
+          className="border border-white/10 px-4 py-2 rounded-lg bg-[#32B67A] text-black font-semibold hover:bg-[#2acc83]"
+        >
+          Show Stations
+        </button>
       </div>
     </div>
   );

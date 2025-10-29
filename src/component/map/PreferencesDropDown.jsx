@@ -5,12 +5,13 @@ import { useStations } from "../../hooks/useStations";
 
 export default function PreferencesDropdown({ onChange, selectedPreference }) {
 const [selected, setSelected] = useState(selectedPreference || "Shortest");
-  const options = ["Shortest", "Longest"];
+  const options = ["Shortest", "Longest", "Cheapest", "Fare"];
 
   const handleSelect = (option) => {
     setSelected(option);
     if (onChange) onChange(option);
   };
+  
 
   return (
     <div className="relative w-full">

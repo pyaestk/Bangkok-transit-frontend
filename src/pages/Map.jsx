@@ -146,9 +146,9 @@ export default function Map() {
     return <div className="text-red-400 p-4">Failed to load: {error}</div>;
 
   return (
-    <div className="xl:container xl:mx-auto flex flex-col sm:flex-row gap-5 text-white w-full">
+    <div className="flex flex-col sm:flex-row gap-5 text-white w-full">
       {/* Sidebar */}
-      <div className="w-full md:w-80 ">
+      <div className="w-full md:w-90">
         <TripPlannerBox
           selectedStartStation={startStation}
           selectedTargetStation={targetStation}
@@ -277,7 +277,7 @@ export default function Map() {
           {/* --- Station Selection Dialog (inside map) --- */}
           {showSelectDialog && selectedStationForDialog && (
             <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/60">
-              <div className="relative bg-gradient-to-b from-gray-800 to-gray-900 border border-white/10 rounded-2xl shadow-2xl p-5 w-[85%] sm:w-[65%] md:w-[50%] max-w-[320px] text-white animate-fadeIn">
+              <div className="relative bg-[#0a0a0aa9] backdrop-blur-[3px] border border-white/30 rounded-2xl shadow-2xl p-5 w-[85%] sm:w-[65%] md:w-[50%] max-w-[320px] text-white animate-fadeIn">
                 {/* Close button */}
                 <button
                   onClick={() => setShowSelectDialog(false)}
@@ -388,8 +388,8 @@ export default function Map() {
           </div>
         </div>
       </div>
-
-      {/* <div className="w-full md:w-70 ">
+{/* 
+      <div className="w-full md:w-70 ">
         <FiltersCard 
           selectedStation={null}
         />
@@ -397,8 +397,8 @@ export default function Map() {
 
       {/* --- Help Popup Modal --- */}
       {showHelp && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="relative bg-gradient-to-b from-gray-800 to-gray-900 border border-white/10 rounded-2xl shadow-2xl p-5 w-[90%] max-w-md text-white animate-fadeIn">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-[3px]">
+          <div className="relative bg-gradient-to-b from-gray-800 to-gray-900 border border-white/10 rounded-2xl shadow-2xl p-4 w-[90%] max-w-md text-white animate-fadeIn">
             {/* Close button */}
             <button
               onClick={() => setShowHelp(false)}
