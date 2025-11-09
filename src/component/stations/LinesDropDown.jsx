@@ -29,14 +29,6 @@ export default function LinesDropdown({ onChange, selectedLine }) {
     onChange(option); // notify parent
   };
 
-  if (isLoading)
-    return (
-      <div className="text-gray-400 text-sm px-3 py-2">Loading lines...</div>
-    );
-  if (error)
-    return (
-      <div className="text-red-400 text-sm px-3 py-2">Failed to load lines</div>
-    );
 
   return (
     <div>

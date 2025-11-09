@@ -3,7 +3,7 @@ import FiltersCard from "../component/stations/FiltersCard";
 import { useStations } from "../hooks/useStations";
 
 export default function Stations() {
-  const { stations } = useStations();
+  const { stations, isLoading, error  } = useStations();
   const [filteredStations, setFilteredStations] = useState([]);
 
   // Handle filter updates
@@ -31,15 +31,19 @@ export default function Stations() {
     setFilteredStations(stations); // Show all initially
   }, [stations]);
 
+
   return (
     <div className="flex flex-col sm:flex-row gap-5 text-white w-full">
       {/* Left Filter Card */}
       <div className="w-full md:w-90">
-        <FiltersCard selectedStation={null} onFilterChange={handleFilterChange} />
+        <FiltersCard
+          selectedStation={null}
+          onFilterChange={handleFilterChange}
+        />
       </div>
 
       {/* Right Result Box */}
-      <div className="flex-1 border border-white/10 rounded-2xl bg-gradient-to-b from-gray-800 to-gray-900 shadow-lg h-[80vh] p-4 text-white flex flex-col">
+      <div className="flex-1 rounded-2xl bg-gray-900/50 border border-gray-800 shadow-lg h-[80vh] p-4 text-white flex flex-col">
         <h2 className="text-lg font-bold mb-3">Stations</h2>
 
         <div
@@ -51,7 +55,27 @@ export default function Stations() {
           [&::-webkit-scrollbar-thumb]:bg-[#32B67A]/70
           hover:[&::-webkit-scrollbar-thumb]:bg-[#32B67A]"
         >
-          {filteredStations.length === 0 ? (
+          {isLoading && (
+            <div className="flex flex-col items-center justify-center h-full">
+              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#32B67A] mb-4"></div>
+              <p className="text-sm text-gray-300 opacity-80">
+                Loading stations...
+              </p>
+            </div>
+          )}
+
+          {!isLoading && error && (
+            <div className="flex flex-col items-center justify-center h-full text-center">
+              <p className="text-red-400 font-semibold">
+                Failed to load stations
+              </p>
+              <p className="text-gray-400 text-sm mt-1">{error}</p>
+            </div>
+          )}
+
+          {!isLoading && !error && (
+            <>
+                        {filteredStations.length === 0 ? (
             <p className="text-gray-400 text-sm mt-2">
               No stations match your filter.
             </p>
@@ -60,7 +84,7 @@ export default function Stations() {
               {filteredStations.map((station) => (
                 <li
                   key={station.station_code}
-                  className="flex items-center justify-between p-3 rounded-lg bg-black/30 border border-white/10 hover:bg-black/40 transition"
+                  className="flex items-center justify-between p-3 rounded-lg bg-black/30 border border-white/10 hover:bg-black/10 transition"
                 >
                   <div>
                     <p className="font-medium text-white">{station.name_en}</p>
@@ -83,6 +107,8 @@ export default function Stations() {
                 </li>
               ))}
             </ul>
+          )}
+            </>
           )}
         </div>
       </div>

@@ -140,7 +140,13 @@ export default function Map() {
   };
 
   if (isLoading)
-    return <div className="text-white p-4">Loading stations...</div>;
+  return (
+    <div className="flex flex-col items-center justify-center h-[80vh] text-white">
+      <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#32B67A] mb-4"></div>
+      <p className="text-sm opacity-80">Loading Map...</p>
+    </div>
+  );
+
   if (error)
     return <div className="text-red-400 p-4">Failed to load: {error}</div>;
 
@@ -408,7 +414,7 @@ export default function Map() {
 
             {/* Title */}
             <h3 className="text-lg font-bold mb-3">
-              💡 How to Use Trip Planner
+              How to Use Trip Planner
             </h3>
 
             {/* Guide content */}
@@ -445,7 +451,7 @@ export default function Map() {
               </ul>
             </div>
 
-            <p className="text-xs text-gray-500 mt-3 border-white/10 pt-2">
+            <p className="text-xs text-gray-500 mt-3 border-white/10 ms-1">
               Tip: Try comparing different preferences to explore alternate
               paths.
             </p>

@@ -192,9 +192,9 @@ export default function TripPlannerBox({
   const handleBack = () => setShowResult(false);
 
   const data = pathData?.data;
-
+// bg-gradient-to-b from-gray-800 to-gray-900
   return (
-    <div className="border border-white/10 rounded-2xl bg-gradient-to-b from-gray-800 to-gray-900 shadow-lg w-full max-h-[80vh] text-white flex flex-col transition-all duration-300">
+    <div className="bg-gray-900/50 border border-gray-800 rounded-2xl  shadow-lg w-full max-h-[80vh] text-white flex flex-col transition-all duration-300">
       {!showResult ? (
         // --- TRIP PLANNER VIEW ---
         <div className="flex-1 overflow-visible p-4">

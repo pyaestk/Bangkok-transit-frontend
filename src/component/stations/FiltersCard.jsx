@@ -33,7 +33,7 @@ export default function FiltersCard({
   }, [selectedStation]);
 
   return (
-    <div className="border border-white/10 p-4 rounded-2xl bg-gradient-to-b from-gray-800 to-gray-900 shadow-lg text-white">
+    <div className="bg-gray-900/50 border border-gray-800 p-4 rounded-2xl shadow-lg text-white">
       <h2 className="text-lg font-bold mb-4 mx-1">Filter</h2>
 
       {/* Line Filter */}
