@@ -3,7 +3,7 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { useStations } from "../../hooks/useStations";
 
-export default function LinesDropdown({ onChange, selectedLine  }) {
+export default function LinesDropdown({ onChange, selectedLine }) {
   const [selected, setSelected] = useState(selectedLine || "All");
   const { stations, isLoading, error } = useStations();
   // const options = ["All", "Blue", "Sukhumvit", "Silom", "Red", "Yellow", "Pink"];
@@ -29,19 +29,11 @@ export default function LinesDropdown({ onChange, selectedLine  }) {
     onChange(option); // notify parent
   };
 
-  if (isLoading)
-    return (
-      <div className="text-gray-400 text-sm px-3 py-2">Loading lines...</div>
-    );
-  if (error)
-    return (
-      <div className="text-red-400 text-sm px-3 py-2">Failed to load lines</div>
-    );
 
   return (
     <div>
       <Menu as="div" className="relative w-full">
-        <MenuButton className="inline-flex w-full justify-between rounded-lg bg-black/30 px-3 py-2 text-sm text-white border border-white/10 hover:bg-white/10 focus:outline-none">
+        <MenuButton className="inline-flex w-full justify-between rounded-lg bg-black/30 px-3 py-2 text-sm text-white border border-white/10 hover:bg-gray-800 focus:outline-none">
           {selected}
           <ChevronDownIcon
             aria-hidden="true"
@@ -51,12 +43,18 @@ export default function LinesDropdown({ onChange, selectedLine  }) {
 
         <MenuItems
           transition
-          className="absolute left-0 z-10 mt-2 w-full origin-top rounded-md bg-gray-950 border border-white/10 shadow-lg focus:outline-none
-            max-h-40 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-800
+          className="absolute left-0 z-50 mt-2 w-full max-h-70 origin-top rounded-md bg-gray-800 border border-white/10 shadow-lg focus:outline-none
+            overflow-y-auto transition-all duration-200 ease-out
+            scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-800
             data-closed:scale-95 data-closed:opacity-0 data-closed:transform 
             data-enter:duration-100 data-enter:ease-out 
-            data-leave:duration-75 data-leave:ease-in"
-        >
+            data-leave:duration-75 data-leave:ease-in [&::-webkit-scrollbar]:w-2
+            [&::-webkit-scrollbar-track]:rounded-full
+            [&::-webkit-scrollbar-track]:bg-gray-100
+            [&::-webkit-scrollbar-thumb]:rounded-full
+            [&::-webkit-scrollbar-thumb]:bg-gray-300
+            dark:[&::-webkit-scrollbar-track]:bg-neutral-700
+            dark:[&::-webkit-scrollbar-thumb]:bg-[#32B67A]">
           <div className="py-1">
             {lineOptions.map((option) => (
               <MenuItem key={option}>

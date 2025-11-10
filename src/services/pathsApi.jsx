@@ -1,7 +1,7 @@
 import { fetchJson } from "../shared/lib/fetchJson";
 
 // Base URL from Vite environment
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 
 // POST /route/shortest
@@ -25,8 +25,8 @@ export async function fetchShortestPath(fromCode, toCode) {
 
 // POST /paths/longest
 // Request longest path between two station codes
-export async function fetchLongestPath(fromCode, toCode) {
-  const url = `${API_BASE}/paths/longest`;
+export async function fetchAllPaths(fromCode, toCode) {
+  const url = `${API_BASE}/paths/all_paths`;
 
   const payload = {
     from_station_code: fromCode,

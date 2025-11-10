@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
-import FiltersCard from "../component/map/FiltersCard";
 import { useStations } from "../hooks/useStations";
 import TripPlannerBox from "../component/map/TripPlannerBox";
 
@@ -141,14 +140,20 @@ export default function Map() {
   };
 
   if (isLoading)
-    return <div className="text-white p-4">Loading stations...</div>;
+  return (
+    <div className="flex flex-col items-center justify-center h-[80vh] text-white">
+      <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#32B67A] mb-4"></div>
+      <p className="text-sm opacity-80">Loading Map...</p>
+    </div>
+  );
+
   if (error)
     return <div className="text-red-400 p-4">Failed to load: {error}</div>;
 
   return (
     <div className="flex flex-col sm:flex-row gap-5 text-white w-full">
       {/* Sidebar */}
-      <div className="w-full md:w-90">
+      <div className="w-full md:w-100">
         <TripPlannerBox
           selectedStartStation={startStation}
           selectedTargetStation={targetStation}
@@ -364,7 +369,7 @@ export default function Map() {
             </button>
           </div>
 
-          <div className="absolute top-3 left-3 flex flex-col gap-2 z-20 text-sm">
+          <div className="absolute top-3 left-3 flex flex-col gap-2 text-sm">
             <button
               onClick={handleStationReset}
               className="px-3 py-2 rounded-lg bg-black/60 text-white hover:bg-black/80 active:scale-95"
@@ -398,7 +403,7 @@ export default function Map() {
       {/* --- Help Popup Modal --- */}
       {showHelp && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-[3px]">
-          <div className="relative bg-gradient-to-b from-gray-800 to-gray-900 border border-white/10 rounded-2xl shadow-2xl p-4 w-[90%] max-w-md text-white animate-fadeIn">
+          <div className="relative bg-gray-900/60 backdrop-blur-[3px] border border-white/10 rounded-2xl shadow-2xl p-4 w-[90%] max-w-md text-white animate-fadeIn">
             {/* Close button */}
             <button
               onClick={() => setShowHelp(false)}
@@ -409,7 +414,7 @@ export default function Map() {
 
             {/* Title */}
             <h3 className="text-lg font-bold mb-3">
-              💡 How to Use Trip Planner
+              How to Use Trip Planner
             </h3>
 
             {/* Guide content */}
@@ -446,7 +451,7 @@ export default function Map() {
               </ul>
             </div>
 
-            <p className="text-xs text-gray-500 mt-3 border-white/10 pt-2">
+            <p className="text-xs text-gray-500 mt-3 border-white/10 ms-1">
               Tip: Try comparing different preferences to explore alternate
               paths.
             </p>
