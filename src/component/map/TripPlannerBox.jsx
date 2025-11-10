@@ -2,11 +2,11 @@ import { useState, useEffect, useRef } from "react";
 import { useStations } from "../../hooks/useStations";
 import PreferencesDropdown from "./PreferencesDropDown";
 import { useShortestPath } from "../../hooks/useShortestPath";
-import { useLongestPath } from "../../hooks/useLongestPath";
 import { useCheapestPath } from "../../hooks/useCheapestPath";
+import { useAllPaths } from "../../hooks/useAllPaths.jsx";
 import { useFarePath } from "../../hooks/useFarePath.jsx";
 import ResultView from "./ResultBox.jsx";
-// import { ArrowDown } from "lucide-react"; // optional, for visual arrows
+import AllRoutesBox from "./AllRoutesBox.jsx";
 
 export default function TripPlannerBox({
   selectedStartStation,
@@ -21,6 +21,8 @@ export default function TripPlannerBox({
 
   const [showResult, setShowResult] = useState(false);
   const [preference, setPreference] = useState("Shortest");
+  const [selectedRoute, setSelectedRoute] = useState(null);
+  const [routes, setRoutes] = useState([]);
 
   const { stations } = useStations();
   const [filteredStart, setFilteredStart] = useState([]);
@@ -29,39 +31,59 @@ export default function TripPlannerBox({
   const startRef = useRef(null);
   const targetRef = useRef(null);
 
-  // for handling clicking outside of textfield
+  // Hooks for each API
+  const { pathData: shortestData, isLoading: isShortestLoading, error: shortestError, getShortestPath, resetPath: shortestReset } = useShortestPath();
+  const { pathData: cheapestData, isLoading: isCheapestLoading, error: cheapestError, getCheapestPath, resetPath: cheapestReset } = useCheapestPath();
+  const { pathData: fareData, isLoading: isFareLoading, error: fareError, getFarePath, resetPath: fareReset } = useFarePath();
+  const { pathData: allData, isLoading: isAllLoading, error: allError, getAllPaths, resetPath: allReset } = useAllPaths();
+
+  const isAllRoutesMode = preference === "All Routes";
+
+  // Reset on external trigger
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (startRef.current && !startRef.current.contains(event.target)) {
-        setFilteredStart([]);
-      }
-      if (targetRef.current && !targetRef.current.contains(event.target)) {
-        setFilteredTarget([]);
-      }
-    };
+    setStartStation("");
+    setStartStationCode("");
+    setTargetStation("");
+    setTargetStationCode("");
+    setPreference("Shortest");
+    setShowResult(false);
+    setSelectedRoute(null);
+    setRoutes([]);
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+    shortestReset?.();
+    cheapestReset?.();
+    fareReset?.();
+    allReset?.();
+    onPathStations?.([]);
+  }, [resetTrigger]);
 
-  // for suggestion box handling
+  // Suggestion box
   const handleStartInput = (e) => {
     const value = e.target.value;
-    setStartStation(value);
-
-    if (value.trim() === "") {
-      setFilteredStart([]);
-      return;
-    }
-
-    const filtered = stations.filter(
-      (s) =>
-        s.name_en.toLowerCase().includes(value.toLowerCase()) ||
-        s.station_code.toLowerCase().includes(value.toLowerCase())
+    setFilteredStart(
+      value.trim()
+        ? stations.filter(
+            (s) =>
+              s.name_en.trim().toLowerCase().includes(value.toLowerCase()) ||
+              s.station_code.trim().toLowerCase().includes(value.toLowerCase())
+          ).slice(0, 10)
+        : []
     );
-    setFilteredStart(filtered.slice(0, 10)); // limit suggestions
+    setStartStation(value);
+  };
+
+  const handleTargetInput = (e) => {
+    const value = e.target.value;
+    setFilteredTarget(
+      value.trim()
+        ? stations.filter(
+            (s) =>
+              s.name_en.toLowerCase().includes(value.toLowerCase()) ||
+              s.station_code.toLowerCase().includes(value.toLowerCase())
+          ).slice(0, 10)
+        : []
+    );
+    setTargetStation(value);
   };
 
   const handleSelectStart = (station) => {
@@ -70,87 +92,13 @@ export default function TripPlannerBox({
     setFilteredStart([]);
   };
 
-  const handleTargetInput = (e) => {
-    const value = e.target.value;
-    setTargetStation(value);
-
-    if (value.trim() === "") {
-      setFilteredTarget([]);
-      return;
-    }
-
-    const filtered = stations.filter(
-      (s) =>
-        s.name_en.toLowerCase().includes(value.toLowerCase()) ||
-        s.station_code.toLowerCase().includes(value.toLowerCase())
-    );
-    setFilteredTarget(filtered.slice(0, 5));
-  };
-
   const handleSelectTarget = (station) => {
     setTargetStation(station.name_en);
     setTargetStationCode(station.station_code);
     setFilteredTarget([]);
   };
 
-  //for hooks
-  const {
-    pathData: shortestData,
-    isLoading: isShortestLoading,
-    error: shortestError,
-    getShortestPath,
-    resetPath: shortestReset,
-  } = useShortestPath();
-
-  const {
-    pathData: longestData,
-    isLoading: isLongestLoading,
-    error: longestError,
-    getLongestPath,
-    resetPath: longestReset,
-  } = useLongestPath();
-
-  const {
-    pathData: cheapestData,
-    isLoading: isCheapestLoading,
-    error: cheapestError,
-    getCheapestPath,
-    resetPath: cheapestReset,
-  } = useCheapestPath();
-
-  
-  const {
-    pathData: fareData,
-    isLoading: isFareLoading,
-    error: fareError,
-    getFarePath,
-    resetPath: fareReset,
-  } = useFarePath();
-
-  useEffect(() => {
-    setStartStation("");
-    setStartStationCode("");
-    setTargetStation("");
-    setTargetStationCode("");
-    setPreference("Shortest");
-    setShowResult(false);
-
-    // reset path data from hooks
-    if (typeof shortestReset === "function") shortestReset();
-    if (typeof longestReset === "function") longestReset();
-    if (typeof longestReset === "function") cheapestReset();
-    if (typeof longestReset === "function") fareReset();
-
-    // clear parent map route
-    if (onPathStations) onPathStations([]);
-  }, [resetTrigger]);
-
-  // Unified state selection
-  const isLoading = isShortestLoading || isLongestLoading || isCheapestLoading || isFareLoading;
-  const error = shortestError || longestError || cheapestError || fareError;
-  const pathData = preference === "Longest" ? longestData : preference === "Cheapest" ? cheapestData : preference == "Fare" ? fareData : shortestData;
-
-  // Sync with map clicks
+  // Sync map clicks
   useEffect(() => {
     if (selectedStartStation) {
       setStartStation(selectedStartStation.name_en || "");
@@ -165,41 +113,76 @@ export default function TripPlannerBox({
     }
   }, [selectedTargetStation]);
 
+  // Plan route handler
   const handlePlanRoute = async () => {
     if (!startStationCode || !targetStationCode) {
       alert("Please select both start and target stations.");
       return;
     }
-    if (preference === "Longest") {
-      await getLongestPath(startStationCode, targetStationCode);
-    } if (preference === "Cheapest") {
+
+    if (isAllRoutesMode) {
+      await getAllPaths(startStationCode, targetStationCode);
+    } else if (preference === "Cheapest") {
       await getCheapestPath(startStationCode, targetStationCode);
-    } if (preference === "Fare") {
+    } else if (preference === "Fare") {
       await getFarePath(startStationCode, targetStationCode);
     } else {
       await getShortestPath(startStationCode, targetStationCode);
     }
   };
 
+  // Watch data changes
   useEffect(() => {
-    if (pathData?.data) {
+    if (!isAllRoutesMode && (shortestData?.data || cheapestData?.data || fareData?.data)) {
+      const activeData =
+        shortestData?.data || cheapestData?.data || fareData?.data;
       setShowResult(true);
-      if (onPathStations) {
-        onPathStations(pathData.data.stations || []); // send stations to parent
-      }
+      setSelectedRoute(activeData);
+      onPathStations?.(activeData.stations || []);
     }
-  }, [pathData]);
-  const handleBack = () => setShowResult(false);
+  }, [shortestData, cheapestData, fareData]);
 
-  const data = pathData?.data;
-// bg-gradient-to-b from-gray-800 to-gray-900
+  useEffect(() => {
+    if (isAllRoutesMode && allData?.data) {
+      const list = Array.isArray(allData.data) ? allData.data : [allData.data];
+      setRoutes(list);
+      setShowResult(true);
+    }
+  }, [allData, isAllRoutesMode]);
+
+  const handleSelectRoute = (route) => {
+    setSelectedRoute(route);
+    setShowResult(true); // switch to ResultView
+    onPathStations?.(route.stations || []);
+  };
+
+  const handleBack = () => {
+    if (isAllRoutesMode && selectedRoute) {
+      // go back to All Routes list if coming from ResultView
+      setSelectedRoute(null);
+      onPathStations?.([]);
+    } else {
+      // go back to planner
+      setShowResult(false);
+      setSelectedRoute(null);
+      onPathStations?.([]);
+    }
+  };
+
+
+  const isLoading =
+    isShortestLoading || isCheapestLoading || isFareLoading || isAllLoading;
+  const error =
+    shortestError || cheapestError || fareError || allError;
+
   return (
-    <div className="bg-gray-900/50 border border-gray-800 rounded-2xl  shadow-lg w-full max-h-[80vh] text-white flex flex-col transition-all duration-300">
+    <div className="bg-gray-900/50 border border-gray-800 rounded-2xl shadow-lg w-full max-h-[80vh] text-white flex flex-col transition-all duration-300">
       {!showResult ? (
-        // --- TRIP PLANNER VIEW ---
-        <div className="flex-1 overflow-visible p-4">
+        // === Trip Planner Form ===
+        <div className="p-4">
           <h2 className="text-lg font-bold mb-3 mx-1">Trip Planner</h2>
 
+          {/* From */}
           <label className="block mb-2 mx-1 text-sm">From</label>
           <div className="relative" ref={startRef}>
             <input
@@ -210,24 +193,35 @@ export default function TripPlannerBox({
               className="w-full text-sm px-3 py-2 rounded-lg bg-black/30 border border-white/10 focus:outline-none"
             />
             {filteredStart.length > 0 && (
-              <ul className="absolute z-10 w-full bg-gray-800 border border-white/10 rounded-lg mt-1 max-h-fit overflow-y-auto">
-                {filteredStart.map((station) => (
+              <ul
+                className="absolute left-0 z-50 mt-2 w-full max-h-70 origin-top rounded-md bg-gray-800 border border-white/10 shadow-lg focus:outline-none
+            overflow-y-auto transition-all duration-200 ease-out
+            scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-800
+            data-closed:scale-95 data-closed:opacity-0 data-closed:transform 
+            data-enter:duration-100 data-enter:ease-out 
+            data-leave:duration-75 data-leave:ease-in [&::-webkit-scrollbar]:w-2
+            [&::-webkit-scrollbar-track]:rounded-full
+            [&::-webkit-scrollbar-track]:bg-gray-100
+            [&::-webkit-scrollbar-thumb]:rounded-full
+            [&::-webkit-scrollbar-thumb]:bg-gray-300
+            dark:[&::-webkit-scrollbar-track]:bg-neutral-700
+            dark:[&::-webkit-scrollbar-thumb]:bg-[#32B67A]"
+              >
+                {filteredStart.map((s) => (
                   <li
-                    key={station.station_code}
-                    onClick={() => handleSelectStart(station)}
+                    key={s.station_code}
+                    onClick={() => handleSelectStart(s)}
                     className="px-3 py-2 hover:bg-gray-700 cursor-pointer text-sm"
                   >
-                    {station.name_en} –{" "}
-                    <span className="text-gray-400">
-                      {station.station_code}
-                    </span>
+                    {s.name_en} –{" "}
+                    <span className="text-gray-400">{s.station_code}</span>
                   </li>
                 ))}
               </ul>
             )}
           </div>
 
-          {/* To Station */}
+          {/* To */}
           <label className="block mx-1 mt-3 mb-2 text-sm">To</label>
           <div className="relative" ref={targetRef}>
             <input
@@ -238,64 +232,68 @@ export default function TripPlannerBox({
               className="w-full text-sm px-3 py-2 rounded-lg bg-black/30 border border-white/10 focus:outline-none"
             />
             {filteredTarget.length > 0 && (
-              <ul className="absolute z-30 w-full max-h-fit bg-gray-800 border border-white/10 rounded-lg mt-1 overflow-y-auto">
-                {filteredTarget.map((station) => (
+              <ul
+                className="absolute left-0 z-50 mt-2 w-full max-h-70 origin-top rounded-md bg-gray-800 border border-white/10 shadow-lg focus:outline-none
+            overflow-y-auto transition-all duration-200 ease-out
+            scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-800
+            data-closed:scale-95 data-closed:opacity-0 data-closed:transform 
+            data-enter:duration-100 data-enter:ease-out 
+            data-leave:duration-75 data-leave:ease-in [&::-webkit-scrollbar]:w-2
+            [&::-webkit-scrollbar-track]:rounded-full
+            [&::-webkit-scrollbar-track]:bg-gray-100
+            [&::-webkit-scrollbar-thumb]:rounded-full
+            [&::-webkit-scrollbar-thumb]:bg-gray-300
+            dark:[&::-webkit-scrollbar-track]:bg-neutral-700
+            dark:[&::-webkit-scrollbar-thumb]:bg-[#32B67A]"
+              >
+                {filteredTarget.map((s) => (
                   <li
-                    key={station.station_code}
-                    onClick={() => handleSelectTarget(station)}
+                    key={s.station_code}
+                    onClick={() => handleSelectTarget(s)}
                     className="px-3 py-2 hover:bg-gray-700 cursor-pointer text-sm"
                   >
-                    {station.name_en} –{" "}
-                    <span className="text-gray-400">
-                      {station.station_code}
-                    </span>
+                    {s.name_en} –{" "}
+                    <span className="text-gray-400">{s.station_code}</span>
                   </li>
                 ))}
               </ul>
             )}
           </div>
 
-          <div className="flex flex-row space-x-3 justify-between my-3">
-            <div className="flex-1">
-              <label className="block mx-1 mb-2 text-sm">Preferences</label>
-              {/* <LinesDropdown /> */}
-              <PreferencesDropdown
-                selectedPreference={preference}
-                onChange={(value) => setPreference(value)}
-              />
-            </div>
+          {/* Preferences */}
+          <div className="mt-4">
+            <label className="block mx-1 mb-2 text-sm">Preference</label>
+            <PreferencesDropdown
+              selectedPreference={preference}
+              onChange={setPreference}
+            />
           </div>
 
-          <div className="flex flex-wrap space-x-3 mt-7 justify-between text-sm">
-            <button
-              onClick={handlePlanRoute}
-              disabled={isLoading}
-              className="flex-1 border border-white/10 px-4 py-2 rounded-lg bg-[#32B67A] text-black font-semibold hover:bg-[#2acc83] disabled:opacity-60"
-            >
-              {isLoading ? "Planning..." : "Plan Route"}
-            </button>
-            {/* <button className="flex-1 border border-white/10 px-4 py-2 rounded-lg bg-gray-800 text-white hover:bg-white/10">
-              Fare Estimate
-            </button> */}
+          <button
+            onClick={handlePlanRoute}
+            disabled={isLoading}
+            className="w-full mt-5 bg-[#32B67A] hover:bg-[#2acc83] text-black font-semibold rounded-lg py-2 transition disabled:opacity-50"
+          >
+            {isLoading ? "Planning..." : "Plan Route"}
+          </button>
 
-            {/* <div className="p-3 rounded-lg bg-black/20 border border-white/10 text-xs text-gray-300 leading-relaxed w-full">
-              <p className="font-semibold text-white mb-1">💡 How to Use:</p>
-              <ul className="list-disc list-inside space-y-1">
-                <li>Click on a station on the map to set your <span className="text-[#32B67A] font-medium">start</span> and <span className="text-red-400 font-medium">destination</span>.</li>
-                <li>After selecting both, choose your <span className="text-white font-medium">preference</span> — <span className="text-[#32B67A] font-medium">Shortest</span> or <span className="text-blue-400 font-medium">Longest</span> route.</li>
-                <li>Press <span className="text-white font-medium">Plan Route</span> to calculate the path between stations.</li>
-                <li>Use <span className="text-white font-medium">Reset Station</span> on the map to start over.</li>
-                <li>Use <span className="text-white font-medium">Zoom</span> (+ / −) and <span className="text-white font-medium">⟳ Reset View</span> to explore the map easily.</li>
-              </ul>
-            </div> */}
-          </div>
+          <p className="text-gray-500 text-xs mt-6 mx-1">
+            Tip: Type or click on stations to set your start and destination - suggestions appear as you type.
+          </p>
 
-          {error && <p className="text-red-400 mt-3">{error}</p>}
+          {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
         </div>
-      ) : (
-        // --- RESULT VIEW ---
-        <ResultView data={data} onBack={handleBack} />
-      )}
+      ) : selectedRoute ? (
+        // Show route details when a route is selected (even from AllRoutesBox)
+        <ResultView data={selectedRoute} onBack={handleBack} />
+      ) : isAllRoutesMode ? (
+        // Show all route options
+        <AllRoutesBox
+          routes={routes}
+          onSelectRoute={handleSelectRoute}
+          onBack={handleBack}
+        />
+      ) : null}
     </div>
   );
 }

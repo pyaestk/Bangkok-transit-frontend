@@ -23,12 +23,14 @@ function App() {
             <Route path="/map" element={<Map />} />
             <Route path="/planner" element={<Planner />} />
             <Route path="/routes" element={<TrainRoutes />} />
-            <Route path="/stations" element={<Stations />} />
+            <Route path="/stations" element={<Stations/>} />
             <Route path="/fares" element={<Fares />} />
             <Route path="/about" element={<About />} />
           </Routes>
         </main>
       </div>
+
+      {/* footer */}
       <div className="px-4 sm:px-6 text-sm lg:px-8 py-4 bg-black text-white border-t border-gray-800 flex flex-row justify-between">
         <p className="text-gray-400">© 2025 Bangkok Transit</p>
         <p className="text-[#5AA9FF]">Help</p>

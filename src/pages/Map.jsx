@@ -153,7 +153,7 @@ export default function Map() {
   return (
     <div className="flex flex-col sm:flex-row gap-5 text-white w-full">
       {/* Sidebar */}
-      <div className="w-full md:w-90">
+      <div className="w-full md:w-100">
         <TripPlannerBox
           selectedStartStation={startStation}
           selectedTargetStation={targetStation}
@@ -403,7 +403,7 @@ export default function Map() {
       {/* --- Help Popup Modal --- */}
       {showHelp && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-[3px]">
-          <div className="relative bg-gradient-to-b from-gray-800 to-gray-900 border border-white/10 rounded-2xl shadow-2xl p-4 w-[90%] max-w-md text-white animate-fadeIn">
+          <div className="relative bg-gray-900/60 backdrop-blur-[3px] border border-white/10 rounded-2xl shadow-2xl p-4 w-[90%] max-w-md text-white animate-fadeIn">
             {/* Close button */}
             <button
               onClick={() => setShowHelp(false)}

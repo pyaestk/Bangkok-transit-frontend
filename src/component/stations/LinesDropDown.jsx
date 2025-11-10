@@ -33,7 +33,7 @@ export default function LinesDropdown({ onChange, selectedLine }) {
   return (
     <div>
       <Menu as="div" className="relative w-full">
-        <MenuButton className="inline-flex w-full justify-between rounded-lg bg-black/30 px-3 py-2 text-sm text-white border border-white/10 hover:bg-white/10 focus:outline-none">
+        <MenuButton className="inline-flex w-full justify-between rounded-lg bg-black/30 px-3 py-2 text-sm text-white border border-white/10 hover:bg-gray-800 focus:outline-none">
           {selected}
           <ChevronDownIcon
             aria-hidden="true"

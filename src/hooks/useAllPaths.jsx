@@ -1,19 +1,19 @@
 import { useState } from "react";
-import { fetchLongestPath } from "../services/pathsApi";
+import { fetchAllPaths } from "../services/pathsApi";
 
-export function useLongestPath() {
+export function useAllPaths() {
   const [pathData, setPathData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
   const resetPath = () => setPathData(null);
 
-  async function getLongestPath(fromCode, toCode) {
+  async function getAllPaths(fromCode, toCode) {
     setIsLoading(true);
     setError("");
     setPathData(null);
 
-    const result = await fetchLongestPath(fromCode, toCode);
+    const result = await fetchAllPaths(fromCode, toCode);
 
     if (result.ok) {
       setPathData(result.data);
@@ -28,7 +28,7 @@ export function useLongestPath() {
     pathData,
     isLoading,
     error,
-    getLongestPath, 
+    getAllPaths, 
     resetPath
   };
 }

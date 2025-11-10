@@ -30,11 +30,11 @@ export default function ResultView({ data, onBack }) {
         <div className="space-y-1">
           <p>
             <span className="text-gray-400">From:</span>{" "}
-            <strong>{data.start_station_code}</strong>
+            <strong>{data.route_steps[0].station.name} - {data.start_station_code}</strong>
           </p>
           <p>
             <span className="text-gray-400">To:</span>{" "}
-            <strong>{data.end_station_code}</strong>
+            <strong>{data.route_steps[data.route_steps.length - 1].station.name} - {data.end_station_code}</strong>
           </p>
           {(data.route_description || "").split(/\n|\\n/).map((line, i) => (
             <p key={i} className="text-gray-300 text-xs mt-3">
@@ -90,7 +90,7 @@ export default function ResultView({ data, onBack }) {
                 {step.line && (
                   <span
                     className={`inline-block mt-1 w-fit px-2 py-0.5 rounded bg-gray-700 text-[10px] ${
-                      step.line === "MRT Yellow Line Monorail" || step.line == "MRT Pink Line Monorail" || step.line == "BTS Gold Line" ? "text-black" : "text-white"
+                      step.line === "MRT Yellow Line Monorail" || step.line == "MRT Pink Line Monorail" || step.line == "BTS Gold Line" || step.line == "BTS Sukhumvit Line" ? "text-black" : "text-white"
                     }`}
                     style={{
                       backgroundColor: lineColors[step.line] || "#32B67A",
