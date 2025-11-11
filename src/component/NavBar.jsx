@@ -27,7 +27,7 @@ export default function NavBar() {
           {/* Brand */}
           <div className="flex flex-row items-center">
             <img
-            src="public\logo.png"
+            src="/logo.png"
             alt="Bangkok Transit"
             className="h-full w-7 select-none pointer-events-none"
           />
