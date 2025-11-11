@@ -101,7 +101,7 @@ function LineCard({ title, items }) {
 
 
   return (
-    <div className="rounded-2xl bg-gray-900/50 border border-gray-800 p-4 shadow-lg">
+    <div className="rounded-2xl bg-gray-900/50 border border-gray-800 p-3 shadow-lg">
       <h3 className="text-gray-200 font-semibold mb-3">{title}</h3>
       <div className="space-y-3">
         {items.map((ln) => (
@@ -142,7 +142,7 @@ export default function TrainRoutes() {
   return (
     <div className="mx-auto w-full max-w-7xl ">
       {/* <h1 className="text-3xl font-bold text-gray-100 mb-6">Routes</h1> */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <LineCard title="BTS" items={LINES.BTS} />
         <LineCard title="SRT & Airport" items={LINES.SRT} />
         <LineCard title="MRT" items={LINES.MRT} />

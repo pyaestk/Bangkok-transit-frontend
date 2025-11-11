@@ -1,12 +1,13 @@
 import { useState, useEffect, useMemo } from "react";
 import FiltersCard from "../component/stations/FiltersCard";
 import { useStations } from "../hooks/useStations";
-import { useLocation } from "react-router-dom";
 import { lineColors } from "../utils/lineColors";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function Stations() {
   const location = useLocation();
   const lineName = location?.state?.lineName || "All";
+
   const selectedStation = useMemo(
     () => ({
       line: { name_en: lineName },
@@ -14,7 +15,7 @@ export default function Stations() {
     [lineName]
   );
 
-  const { stations, isLoading, error } = useStations();
+  const { stations = [], isLoading, error } = useStations();
   const [filteredStations, setFilteredStations] = useState([]);
 
   // Handle filter updates
@@ -52,6 +53,18 @@ export default function Stations() {
     }
   }, [stations, lineName]);
 
+  const nav = useNavigate();
+
+  function openStartStation(station) {
+    nav("/map", { state: { startStation: station.station_code || "" } });
+  }
+  function openTargetStation(station) {
+    nav("/map", { state: { targetStation: station.station_code || "" } });
+  }
+  function openStationMap(station) {
+    nav("/map", { state: { showStation: station.station_code || "" } });
+  }
+
   return (
     <div className="flex flex-col sm:flex-row gap-5 text-white w-full">
       {/* Left Filter Card */}
@@ -67,7 +80,7 @@ export default function Stations() {
         <h2 className="text-lg font-bold mb-3">Stations</h2>
 
         <div
-          className="flex-1 overflow-y-auto rounded-xl border border-white/10 p-3 bg-black/25 backdrop-blur-sm 
+          className="flex-1 overflow-y-auto rounded-xl border border-white/10 p-3 bg-black/25 backdrop-blur-sm h-full
           [&::-webkit-scrollbar]:w-2
           [&::-webkit-scrollbar-track]:rounded-full
           [&::-webkit-scrollbar-track]:bg-gray-700/40
@@ -76,7 +89,7 @@ export default function Stations() {
           hover:[&::-webkit-scrollbar-thumb]:bg-[#32B67A]"
         >
           {isLoading && (
-            <div className="flex flex-col items-center justify-center h-full">
+            <div className="flex flex-col items-center justify-center h-full text-center">
               <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#32B67A] mb-4"></div>
               <p className="text-sm text-gray-300 opacity-80">
                 Loading stations...
@@ -128,13 +141,21 @@ export default function Stations() {
 
                       {/* Action buttons */}
                       <div className="flex gap-2 flex-shrink-0">
-                        <button className="px-2 py-1 text-xs border border-gray-700 text-gray-200 hover:bg-gray-800 rounded">
+                        <button 
+                          onClick={() => openStationMap(station)}
+                          className="px-2 py-1 text-xs border border-gray-700 text-gray-200 hover:bg-gray-800 rounded">
                           Map
                         </button>
-                        <button className="px-2 py-1 text-xs border border-gray-700 text-gray-200 hover:bg-gray-800 rounded">
+                        <button
+                          onClick={() => openStartStation(station)}
+                          className="px-2 py-1 text-xs border border-gray-700 text-gray-200 hover:bg-gray-800 rounded"
+                        >
                           From
                         </button>
-                        <button className="px-2 py-1 text-xs border border-gray-700 text-gray-200 hover:bg-gray-800 rounded">
+                        <button
+                          onClick={() => openTargetStation(station)}
+                          className="px-2 py-1 text-xs border border-gray-700 text-gray-200 hover:bg-gray-800 rounded"
+                        >
                           To
                         </button>
                       </div>

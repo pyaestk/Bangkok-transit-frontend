@@ -25,7 +25,15 @@ export default function NavBar() {
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Brand */}
-          <div className="text-white text-xl font-bold">Bangkok Transit</div>
+          <div className="flex flex-row items-center">
+            <img
+            src="/logo.png"
+            alt="Bangkok Transit"
+            className="h-full w-7 select-none pointer-events-none"
+          />
+          <div className="text-white text-xl font-bold ms-3">Bangkok Transit</div>
+          </div>
+        
 
           {/* Desktop links */}
           <div className="hidden md:flex space-x-5">

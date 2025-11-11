@@ -17,7 +17,7 @@ function App() {
         <NavBar />
 
         {/* Main content area */}
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-4">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/map" element={<Map />} />
