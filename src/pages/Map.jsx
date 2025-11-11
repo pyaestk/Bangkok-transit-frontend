@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { useStations } from "../hooks/useStations";
+import { useLocation } from "react-router-dom";
 import TripPlannerBox from "../component/map/TripPlannerBox";
 
 export default function Map() {
@@ -18,7 +19,8 @@ export default function Map() {
   const [routeStations, setRouteStations] = useState([]);
   const [activeIndex, setActiveIndex] = useState(-1);
   const [isAnimating, setIsAnimating] = useState(false);
-  const [selectedStationForDialog, setSelectedStationForDialog] = useState(null);
+  const [selectedStationForDialog, setSelectedStationForDialog] =
+    useState(null);
   const [showSelectDialog, setShowSelectDialog] = useState(false);
   const animationRef = useRef(null);
 
@@ -139,13 +141,45 @@ export default function Map() {
     }, 300);
   };
 
+  const location = useLocation();
+  const startStationCodeFromNav = location?.state?.startStation || null;
+  const targetStationCodeFromNav = location?.state?.targetStation || null;
+  const showStationCodeFromNav = location?.state?.showStation || null;
+
+  const effectiveStartStation = useMemo(() => {
+    if (startStation) return startStation;
+    return (
+      stations.find((s) => s.station_code === startStationCodeFromNav) || null
+    );
+  }, [startStation, startStationCodeFromNav, stations]);
+
+  const effectiveTargetStation = useMemo(() => {
+    if (targetStation) return targetStation;
+    return (
+      stations.find((s) => s.station_code === targetStationCodeFromNav) || null
+    );
+  }, [targetStation, targetStationCodeFromNav, stations]);
+
+  const showStation = useMemo(() => {
+    if (!showStationCodeFromNav) return null;
+    return (
+      stations.find((s) => s.station_code === showStationCodeFromNav) || null
+    );
+  }, [showStationCodeFromNav, stations]);
+
+  useEffect(() => {
+    if (showStation) {
+      handleStationClick(showStation);
+    }
+  }, [showStation]);
+
   if (isLoading)
-  return (
-    <div className="flex flex-col items-center justify-center h-[80vh] text-white">
-      <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#32B67A] mb-4"></div>
-      <p className="text-sm opacity-80">Loading Map...</p>
-    </div>
-  );
+    return (
+      <div className="flex flex-col items-center justify-center h-[80vh] text-white">
+        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#32B67A] mb-4"></div>
+        <p className="text-sm opacity-80">Loading Map...</p>
+      </div>
+    );
 
   if (error)
     return <div className="text-red-400 p-4">Failed to load: {error}</div>;
@@ -155,8 +189,8 @@ export default function Map() {
       {/* Sidebar */}
       <div className="w-full md:w-100">
         <TripPlannerBox
-          selectedStartStation={startStation}
-          selectedTargetStation={targetStation}
+          selectedStartStation={effectiveStartStation}
+          selectedTargetStation={effectiveTargetStation}
           onPathStations={setRouteStations}
           resetTrigger={resetTrigger}
         />
@@ -393,7 +427,7 @@ export default function Map() {
           </div>
         </div>
       </div>
-{/* 
+      {/* 
       <div className="w-full md:w-70 ">
         <FiltersCard 
           selectedStation={null}
@@ -413,9 +447,7 @@ export default function Map() {
             </button>
 
             {/* Title */}
-            <h3 className="text-lg font-bold mb-3">
-              How to Use Trip Planner
-            </h3>
+            <h3 className="text-lg font-bold mb-3">How to Use Trip Planner</h3>
 
             {/* Guide content */}
             <div className="p-3 rounded-lg bg-black/20 border border-white/10 text-xs text-gray-300 leading-relaxed w-full">
