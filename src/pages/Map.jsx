@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useMemo } from "react";
+import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { useStations } from "../hooks/useStations";
 import { useLocation } from "react-router-dom";
@@ -27,6 +27,21 @@ export default function Map() {
   const [resetTrigger, setResetTrigger] = useState(0);
 
   const [showHelp, setShowHelp] = useState(false);
+
+  const mapScaleRatio = useMemo(() => {
+    if (!xRatio || !yRatio) return 1;
+    return Math.min(xRatio, yRatio);
+  }, [xRatio, yRatio]);
+
+  const scaleToMap = useCallback(
+    (baseValue, minFactor = 0.5, maxFactor = 1.5) => {
+      const min = baseValue * minFactor;
+      const max = baseValue * maxFactor;
+      const scaled = baseValue * mapScaleRatio;
+      return Math.min(Math.max(scaled, min), max);
+    },
+    [mapScaleRatio]
+  );
 
   // for Size of Map Picture
   const ORIGINAL_WIDTH = 841.89;
@@ -205,7 +220,6 @@ export default function Map() {
           )}
           <TransformWrapper
             ref={transformRef}
-            initialScale={1}
             minScale={1}
             maxScale={6}
             centerOnInit={true}
@@ -240,6 +254,13 @@ export default function Map() {
                 {stations.map((station) => {
                   const isStart = station.id === startStation?.id;
                   const isTarget = station.id === targetStation?.id;
+                  const baseSize = isStart || isTarget ? 12 : 6;
+                  const markerSize = scaleToMap(baseSize);
+                  const markerFontSize = scaleToMap(
+                    isStart || isTarget ? 4 : 2,
+                    0.4,
+                    1.2
+                  );
 
                   const colorClasses = isStart
                     ? "bg-[#2acc83] text-black z-30"
@@ -253,14 +274,15 @@ export default function Map() {
                       title={station.name_en}
                       onClick={() => handleStationClick(station)}
                       className={`station-dot absolute flex items-center justify-center 
-                        w-[6px] h-[6px] md:w-[10px] md:h-[10px] xl:w-[12px] xl:h-[12px]
-                        text-[2px] sm:text-[2px] md:text-[3px] xl:text-[4px]
                         font-semibold rounded-full cursor-pointer select-none 
                         ${colorClasses}`}
                       style={{
                         left: `${station.x * xRatio}px`,
                         top: `${station.y * yRatio}px`,
                         transform: "translate(-50%, -50%)",
+                        width: `${markerSize}px`,
+                        height: `${markerSize}px`,
+                        fontSize: `${markerFontSize}px`,
                       }}
                     >
                       {(isStart || isTarget) && station.station_code}
@@ -269,32 +291,35 @@ export default function Map() {
                 })}
 
                 {/* --- Route Stations (from API) --- */}
-                {routeStations.map((station, index) => (
-                  <div
-                    key={index}
-                    title={station.station_code}
-                    className="station-dot absolute flex items-center justify-center 
-                      w-[6px] h-[6px] md:w-[10px] md:h-[10px] xl:w-[12px] xl:h-[12px]
-                      text-[2px] sm:text-[2px] md:text-[3px] xl:text-[4px]
+                {routeStations.map((station, index) => {
+                  const markerSize = scaleToMap(8);
+                  const markerFontSize = scaleToMap(3, 0.4, 1.2);
+                  return (
+                    <div
+                      key={index}
+                      title={station.station_code}
+                      className="station-dot absolute flex items-center justify-center 
                       font-semibold rounded-full cursor-default select-none 
                      bg-[#00ff8c] text-black z-20"
-                    style={{
-                      left: `${station.x * xRatio}px`,
-                      top: `${station.y * yRatio}px`,
-                      transform: "translate(-50%, -50%)",
-                    }}
-                  >
-                    {station.station_code.trim()}
-                  </div>
-                ))}
+                      style={{
+                        left: `${station.x * xRatio}px`,
+                        top: `${station.y * yRatio}px`,
+                        transform: "translate(-50%, -50%)",
+                        width: `${markerSize}px`,
+                        height: `${markerSize}px`,
+                        fontSize: `${markerFontSize}px`,
+                      }}
+                    >
+                      {station.station_code.trim()}
+                    </div>
+                  );
+                })}
                 {/* Animated "Train" / Traveling Dot */}
                 {activeIndex >= 0 && routeStations[activeIndex] && (
                   <div
                     key={activeIndex}
                     title={routeStations[activeIndex].station_code}
                     className={`station-dot absolute flex items-center justify-center 
-                      w-[6px] h-[6px] md:w-[10px] md:h-[10px] xl:w-[12px] xl:h-[12px]
-                      text-[2px] sm:text-[2px] md:text-[3px] xl:text-[4px]
                       font-semibold rounded-full border cursor-default select-none
                       bg-red-400 border-red-600 text-black z-30
                       transition-all duration-300  ${
@@ -304,6 +329,9 @@ export default function Map() {
                       left: `${routeStations[activeIndex].x * xRatio}px`,
                       top: `${routeStations[activeIndex].y * yRatio}px`,
                       transform: "translate(-50%, -50%)",
+                      width: `${scaleToMap(12)}px`,
+                      height: `${scaleToMap(12)}px`,
+                      fontSize: `${scaleToMap(4, 0.4, 1.2)}px`,
                     }}
                   >
                     {routeStations[activeIndex].station_code.trim()}
