@@ -17,11 +17,11 @@ html, body {
 }
 .station-dot {
   -webkit-text-size-adjust: none !important; 
-  text-size-adjust: none !important;
+  text-size-adjust: none!important;
 }
 
 .station-label {
-  font-size: 2px !important;
+  font-size: 1px !important;
   line-height: 1;
   display: inline-block;
   -webkit-text-size-adjust: none !important;
@@ -39,5 +39,7 @@ html, body {
     font-size: 4px !important;
   }
 }
+
+
 
 
