@@ -255,7 +255,7 @@ export default function Map() {
                       className={`absolute flex items-center justify-center 
                         w-[6px] h-[6px] md:w-[10px] md:h-[10px] xl:w-[12px] xl:h-[12px]
                         text-[2px] sm:text-[2px] md:text-[3px] xl:text-[4px]
-                        font-semibold rounded-full cursor-pointer select-none 
+                        font-semibold rounded-full cursor-pointer select-none station-dot
                         ${colorClasses}`}
                       style={{
                         left: `${station.x * xRatio}px`,

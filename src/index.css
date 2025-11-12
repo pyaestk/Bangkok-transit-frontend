@@ -12,5 +12,10 @@ html, body {
 .animate-fadeIn {
   animation: fadeIn 0.2s ease-out forwards;
 }
+.station-dot {
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
+}
+
 
 
