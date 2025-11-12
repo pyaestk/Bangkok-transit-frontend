@@ -1,9 +1,12 @@
 @import "tailwindcss";
 
 html, body {
-  -webkit-text-size-adjust: none;
-  text-size-adjust: none;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%; /* for older WebViews */
 }
+
+
 
 @keyframes fadeIn {
   from { opacity: 0; transform: scale(0.95); }
@@ -13,8 +16,8 @@ html, body {
   animation: fadeIn 0.2s ease-out forwards;
 }
 .station-dot {
-  -webkit-text-size-adjust: none;
-  text-size-adjust: none;
+  -webkit-text-size-adjust: none !important; 
+  text-size-adjust: none !important;
 }
 
 
