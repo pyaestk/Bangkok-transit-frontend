@@ -253,8 +253,8 @@ export default function Map() {
                       title={station.name_en}
                       onClick={() => handleStationClick(station)}
                       className={`absolute flex items-center justify-center 
-                        w-[8px] h-[8px] md:w-[10px] md:h-[10px] xl:w-[12px] xl:h-[12px]
-                        text-[2px] sm:text-[2.5px] md:text-[3px] xl:text-[4px]
+                        w-[6px] h-[6px] md:w-[10px] md:h-[10px] xl:w-[12px] xl:h-[12px]
+                        text-[2px] sm:text-[2px] md:text-[3px] xl:text-[4px]
                         font-semibold rounded-full cursor-pointer select-none 
                         ${colorClasses}`}
                       style={{
@@ -274,8 +274,8 @@ export default function Map() {
                     key={index}
                     title={station.station_code}
                     className="absolute flex items-center justify-center 
-                      w-[8px] h-[8px] md:w-[10px] md:h-[10px] xl:w-[12px] xl:h-[12px]
-                      text-[2px] sm:text-[2.5px] md:text-[3px] xl:text-[4px]
+                      w-[6px] h-[6px] md:w-[10px] md:h-[10px] xl:w-[12px] xl:h-[12px]
+                      text-[2px] sm:text-[2px] md:text-[3px] xl:text-[4px]
                       font-semibold rounded-full cursor-default select-none 
                      bg-[#00ff8c] text-black z-20"
                     style={{
@@ -293,8 +293,8 @@ export default function Map() {
                     key={activeIndex}
                     title={routeStations[activeIndex].station_code}
                     className={`absolute flex items-center justify-center 
-                      w-[8px] h-[8px] md:w-[10px] md:h-[10px] xl:w-[12px] xl:h-[12px]
-                      text-[2px] sm:text-[2.5px] md:text-[3px] xl:text-[4px]
+                      w-[6px] h-[6px] md:w-[10px] md:h-[10px] xl:w-[12px] xl:h-[12px]
+                      text-[2px] sm:text-[2px] md:text-[3px] xl:text-[4px]
                       font-semibold rounded-full border cursor-default select-none
                       bg-red-400 border-red-600 text-black z-30
                       transition-all duration-300  ${
