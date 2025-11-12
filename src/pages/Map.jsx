@@ -177,7 +177,7 @@ export default function Map() {
     return (
       <div className="flex flex-col items-center justify-center h-[80vh] text-white">
         <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#32B67A] mb-4"></div>
-        <p className="text-sm opacity-80">Loading Map...</p>
+        <p className="text-sm opacity-80">Loading Map ...</p>
       </div>
     );
 
