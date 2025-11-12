@@ -66,7 +66,7 @@ export default function Map() {
     if (transformRef.current) {
       transformRef.current.setTransform(0, 0, 1);
       transformRef.current.centerView(1);
-      setScale(1);
+      setScale(3);
     }
   };
 
@@ -254,8 +254,7 @@ export default function Map() {
                       onClick={() => handleStationClick(station)}
                       className={`station-dot absolute flex items-center justify-center 
                         w-[6px] h-[6px] md:w-[10px] md:h-[10px] xl:w-[12px] xl:h-[12px]
-                        text-[2px] sm:text-[2px] md:text-[3px] xl:text-[4px]
-                        font-semibold rounded-full cursor-pointer select-none 
+                        rounded-full cursor-pointer select-none 
                         ${colorClasses}`}
                       style={{
                         left: `${station.x * xRatio}px`,
@@ -263,7 +262,10 @@ export default function Map() {
                         transform: "translate(-50%, -50%)",
                       }}
                     >
-                      {(isStart || isTarget) && station.station_code}
+                      <span
+                        className="text-[2px] sm:text-[2px] md:text-[3px] xl:text-[4px]
+                        font-semibold .station-dot"
+                      >{(isStart || isTarget) && station.station_code.trim()}</span>
                     </div>
                   );
                 })}
@@ -275,16 +277,17 @@ export default function Map() {
                     title={station.station_code}
                     className="station-dot absolute flex items-center justify-center 
                       w-[6px] h-[6px] md:w-[10px] md:h-[10px] xl:w-[12px] xl:h-[12px]
-                      text-[2px] sm:text-[2px] md:text-[3px] xl:text-[4px]
-                      font-semibold rounded-full cursor-default select-none 
+                      rounded-full cursor-default select-none 
                      bg-[#00ff8c] text-black z-20"
                     style={{
                       left: `${station.x * xRatio}px`,
                       top: `${station.y * yRatio}px`,
-                      transform: "translate(-50%, -50%)",
+                      transform: "translate(-50%, -50%) ",
                     }}
                   >
-                    {station.station_code.trim()}
+                    <span className="text-[2px] sm:text-[2px] md:text-[3px] xl:text-[4px] font-semibold .station-dot">
+                      {station.station_code.trim()}
+                    </span>
                   </div>
                 ))}
                 {/* Animated "Train" / Traveling Dot */}
@@ -294,8 +297,7 @@ export default function Map() {
                     title={routeStations[activeIndex].station_code}
                     className={`station-dot absolute flex items-center justify-center 
                       w-[6px] h-[6px] md:w-[10px] md:h-[10px] xl:w-[12px] xl:h-[12px]
-                      text-[2px] sm:text-[2px] md:text-[3px] xl:text-[4px]
-                      font-semibold rounded-full border cursor-default select-none
+                       rounded-full border cursor-default select-none
                       bg-red-400 border-red-600 text-black z-30
                       transition-all duration-300  ${
                         isAnimating ? "opacity-100" : "opacity-0"
@@ -303,10 +305,11 @@ export default function Map() {
                     style={{
                       left: `${routeStations[activeIndex].x * xRatio}px`,
                       top: `${routeStations[activeIndex].y * yRatio}px`,
-                      transform: "translate(-50%, -50%)",
+                      transform: "translate(-50%, -50%) ",
                     }}
                   >
-                    {routeStations[activeIndex].station_code.trim()}
+                    <span className="text-[2px] sm:text-[2px] md:text-[3px] xl:text-[4px]
+                      font-semibold .station-dot">{routeStations[activeIndex].station_code.trim()}</span>
                   </div>
                 )}
               </div>
@@ -331,7 +334,7 @@ export default function Map() {
                 <p className="text-center text-gray-400 text-sm mb-4">
                   Station Code:{" "}
                   <span className="text-white">
-                    {selectedStationForDialog.station_code}
+                    {selectedStationForDialog.station_code.trim()}
                   </span>
                 </p>
 
