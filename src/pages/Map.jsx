@@ -285,7 +285,7 @@ export default function Map() {
                       transform: "translate(-50%, -50%) ",
                     }}
                   >
-                    <span className="text-[2px] sm:text-[2px] md:text-[3px] xl:text-[4px] font-semibold .station-dot">
+                    <span style={{fontSize: "2px"}}>
                       {station.station_code.trim()}
                     </span>
                   </div>
