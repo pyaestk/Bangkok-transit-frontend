@@ -20,5 +20,24 @@ html, body {
   text-size-adjust: none !important;
 }
 
+.station-label {
+  font-size: 2px !important;
+  line-height: 1;
+  display: inline-block;
+  -webkit-text-size-adjust: none !important;
+  text-size-adjust: none !important;
+}
+
+@media (min-width: 768px) {
+  .station-label {
+    font-size: 3px !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  .station-label {
+    font-size: 4px !important;
+  }
+}
 
 

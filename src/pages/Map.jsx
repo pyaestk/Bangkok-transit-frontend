@@ -262,10 +262,9 @@ export default function Map() {
                         transform: "translate(-50%, -50%)",
                       }}
                     >
-                      <span
-                        className="text-[2px] sm:text-[2px] md:text-[3px] xl:text-[4px]
-                        font-semibold station-dot"
-                      >{(isStart || isTarget) && station.station_code.trim()}</span>
+                      <span className="station-label font-semibold">
+                        {(isStart || isTarget) && station.station_code.trim()}
+                      </span>
                     </div>
                   );
                 })}
@@ -285,10 +284,9 @@ export default function Map() {
                       transform: "translate(-50%, -50%) ",
                     }}
                   >
-                    <span
-                        className="text-[2px] sm:text-[2px] md:text-[3px] xl:text-[4px]
-                        font-semibold station-dot"
-                      >{station.station_code.trim()}</span>
+                    <span className="station-label font-semibold">
+                      {station.station_code.trim()}
+                    </span>
                   </div>
                 ))}
                 {/* Animated "Train" / Traveling Dot */}
@@ -309,8 +307,9 @@ export default function Map() {
                       transform: "translate(-50%, -50%) ",
                     }}
                   >
-                    <span className="text-[2px] sm:text-[2px] md:text-[3px] xl:text-[4px]
-                      font-semibold station-dot">{routeStations[activeIndex].station_code.trim()}</span>
+                    <span className="station-label font-semibold">
+                      {routeStations[activeIndex].station_code.trim()}
+                    </span>
                   </div>
                 )}
               </div>
