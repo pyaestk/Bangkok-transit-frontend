@@ -252,10 +252,10 @@ export default function Map() {
                       key={station.id}
                       title={station.name_en}
                       onClick={() => handleStationClick(station)}
-                      className={`absolute flex items-center justify-center 
+                      className={`station-dot absolute flex items-center justify-center 
                         w-[6px] h-[6px] md:w-[10px] md:h-[10px] xl:w-[12px] xl:h-[12px]
                         text-[2px] sm:text-[2px] md:text-[3px] xl:text-[4px]
-                        font-semibold rounded-full cursor-pointer select-none station-dot
+                        font-semibold rounded-full cursor-pointer select-none 
                         ${colorClasses}`}
                       style={{
                         left: `${station.x * xRatio}px`,
@@ -273,7 +273,7 @@ export default function Map() {
                   <div
                     key={index}
                     title={station.station_code}
-                    className="absolute flex items-center justify-center 
+                    className="station-dot absolute flex items-center justify-center 
                       w-[6px] h-[6px] md:w-[10px] md:h-[10px] xl:w-[12px] xl:h-[12px]
                       text-[2px] sm:text-[2px] md:text-[3px] xl:text-[4px]
                       font-semibold rounded-full cursor-default select-none 
@@ -292,7 +292,7 @@ export default function Map() {
                   <div
                     key={activeIndex}
                     title={routeStations[activeIndex].station_code}
-                    className={`absolute flex items-center justify-center 
+                    className={`station-dot absolute flex items-center justify-center 
                       w-[6px] h-[6px] md:w-[10px] md:h-[10px] xl:w-[12px] xl:h-[12px]
                       text-[2px] sm:text-[2px] md:text-[3px] xl:text-[4px]
                       font-semibold rounded-full border cursor-default select-none
