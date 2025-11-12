@@ -4,7 +4,6 @@ import PreferencesDropdown from "./PreferencesDropDown";
 import { useShortestPath } from "../../hooks/useShortestPath";
 import { useCheapestPath } from "../../hooks/useCheapestPath";
 import { useAllPaths } from "../../hooks/useAllPaths.jsx";
-import { useFarePath } from "../../hooks/useFarePath.jsx";
 import ResultView from "./ResultBox.jsx";
 import AllRoutesBox from "./AllRoutesBox.jsx";
 
@@ -28,14 +27,34 @@ export default function TripPlannerBox({
   const [filteredStart, setFilteredStart] = useState([]);
   const [filteredTarget, setFilteredTarget] = useState([]);
 
+  const [hasPlannedRoute, setHasPlannedRoute] = useState(false);
+
   const startRef = useRef(null);
   const targetRef = useRef(null);
 
   // Hooks for each API
-  const { pathData: shortestData, isLoading: isShortestLoading, error: shortestError, getShortestPath, resetPath: shortestReset } = useShortestPath();
-  const { pathData: cheapestData, isLoading: isCheapestLoading, error: cheapestError, getCheapestPath, resetPath: cheapestReset } = useCheapestPath();
-  const { pathData: fareData, isLoading: isFareLoading, error: fareError, getFarePath, resetPath: fareReset } = useFarePath();
-  const { pathData: allData, isLoading: isAllLoading, error: allError, getAllPaths, resetPath: allReset } = useAllPaths();
+  const { 
+    pathData: shortestData, 
+    isLoading: isShortestLoading, 
+    error: shortestError, 
+    getShortestPath, 
+    resetPath: shortestReset 
+  } = useShortestPath();
+
+  const { pathData: cheapestData, 
+    isLoading: isCheapestLoading, 
+    error: cheapestError, 
+    getCheapestPath, 
+    resetPath: cheapestReset 
+  } = useCheapestPath();
+
+  const { 
+    pathData: allData, 
+    isLoading: isAllLoading, 
+    error: allError, 
+    getAllPaths, 
+    resetPath: allReset 
+  } = useAllPaths();
 
   const isAllRoutesMode = preference === "All Routes";
 
@@ -52,7 +71,6 @@ export default function TripPlannerBox({
 
     shortestReset?.();
     cheapestReset?.();
-    fareReset?.();
     allReset?.();
     onPathStations?.([]);
   }, [resetTrigger]);
@@ -115,6 +133,7 @@ export default function TripPlannerBox({
 
   // Plan route handler
   const handlePlanRoute = async () => {
+    setHasPlannedRoute(true);
     if (!startStationCode || !targetStationCode) {
       alert("Please select both start and target stations.");
       return;
@@ -124,8 +143,6 @@ export default function TripPlannerBox({
       await getAllPaths(startStationCode, targetStationCode);
     } else if (preference === "Cheapest") {
       await getCheapestPath(startStationCode, targetStationCode);
-    } else if (preference === "Fare") {
-      await getFarePath(startStationCode, targetStationCode);
     } else {
       await getShortestPath(startStationCode, targetStationCode);
     }
@@ -133,14 +150,20 @@ export default function TripPlannerBox({
 
   // Watch data changes
   useEffect(() => {
-    if (!isAllRoutesMode && (shortestData?.data || cheapestData?.data || fareData?.data)) {
-      const activeData =
-        shortestData?.data || cheapestData?.data || fareData?.data;
+    if (!hasPlannedRoute || isAllRoutesMode) return;
+
+    let activeData = null;
+    if (preference === "Shortest") activeData = shortestData?.data;
+    else if (preference === "Cheapest") activeData = cheapestData?.data;
+
+    if (activeData) {
       setShowResult(true);
       setSelectedRoute(activeData);
       onPathStations?.(activeData.stations || []);
     }
-  }, [shortestData, cheapestData, fareData]);
+  }, [hasPlannedRoute, preference, shortestData, cheapestData, isAllRoutesMode]);
+
+
 
   useEffect(() => {
     if (isAllRoutesMode && allData?.data) {
@@ -171,9 +194,9 @@ export default function TripPlannerBox({
 
 
   const isLoading =
-    isShortestLoading || isCheapestLoading || isFareLoading || isAllLoading;
+    isShortestLoading || isCheapestLoading || isAllLoading;
   const error =
-    shortestError || cheapestError || fareError || allError;
+    shortestError || cheapestError || allError;
 
   return (
     <div className="bg-gray-900/50 border border-gray-800 rounded-2xl shadow-lg w-full max-h-[80vh] text-white flex flex-col transition-all duration-300">

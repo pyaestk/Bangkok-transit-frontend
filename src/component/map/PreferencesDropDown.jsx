@@ -5,7 +5,7 @@ import { useStations } from "../../hooks/useStations";
 
 export default function PreferencesDropdown({ onChange, selectedPreference }) {
 const [selected, setSelected] = useState(selectedPreference || "Shortest");
-  const options = ["Shortest","Cheapest", "Fare", "All Routes"];
+  const options = ["Shortest","Cheapest", "All Routes"];
 
   const handleSelect = (option) => {
     setSelected(option);
