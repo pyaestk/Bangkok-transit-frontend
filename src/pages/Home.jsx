@@ -29,7 +29,7 @@ export default function Home() {
   return (
     <div className="w-full h-full max-w-7xl mx-auto text-white flex flex-col">
       <div className="w-full grid grid-cols-1 md:grid-cols-5 gap-5">
-        <div className="col-span-3 bg-gray-900/50 border border-gray-800 rounded-2xl shadow-lg p-6 md:p-10">
+        <div className="col-span-3 bg-gradient-to-b from-gray-900 to-gray-950 border border-gray-800 rounded-2xl shadow-lg p-6 md:p-10">
           <h1 className="text-3xl md:text-4xl font-bold mb-3">
             Navigate Bangkok smarter
           </h1>
@@ -207,8 +207,8 @@ export default function Home() {
 
       {/* ===================== Stats Section ===================== */}
       <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-5 mt-5 ">
-        <StatBox label="Lines" value="10" />
-        <StatBox label="Stations" value="240+" />
+        <StatBox label="Total Lines" value="10" />
+        <StatBox label="Total Stations" value="240+ " />
         <StatBox label="Coverage" value="Citywide" />
         <StatBox label="Network" value="2025" />
       </div>
