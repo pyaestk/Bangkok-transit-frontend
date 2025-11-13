@@ -117,7 +117,7 @@ export default function Stations() {
                   {filteredStations.map((station) => (
                     <li
                       key={station.station_code}
-                      className="flex items-center justify-between p-3 rounded-lg bg-black/30 border border-white/10 hover:bg-black/10 transition"
+                      className="flex items-center justify-between p-3 rounded-lg bg-black/30 border border-white/10 hover:bg-black/10 hover:border-[#32B67A]  transition"
                     >
                       {/* Line color indicator */}
                       <div

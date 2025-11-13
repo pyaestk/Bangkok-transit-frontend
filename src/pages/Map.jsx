@@ -28,6 +28,7 @@ export default function Map() {
   const [resetTrigger, setResetTrigger] = useState(0);
 
   const [showHelp, setShowHelp] = useState(false);
+  
 
   // for Size of Map Picture
   const ORIGINAL_WIDTH = 841.89;
