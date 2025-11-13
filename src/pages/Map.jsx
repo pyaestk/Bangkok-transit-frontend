@@ -28,7 +28,6 @@ export default function Map() {
   const [resetTrigger, setResetTrigger] = useState(0);
 
   const [showHelp, setShowHelp] = useState(false);
-  
 
   // for Size of Map Picture
   const ORIGINAL_WIDTH = 841.89;
@@ -199,7 +198,7 @@ export default function Map() {
       </div>
 
       {/* Map */}
-      <div className="relative border border-white/10 h-[80vh] w-full flex-1 rounded-2xl bg-gradient-to-b from-gray-800 to-gray-900 shadow-lg text-white">
+      <div className="relative border border-white/10 h-[83vh] w-full flex-1 rounded-2xl bg-gradient-to-b from-gray-800 to-gray-900 shadow-lg text-white">
         <div className="bg-white rounded-lg h-full flex items-center justify-center overflow-hidden relative">
           {/* --- Dim overlay when route is shown --- */}
           {routeStations.length > 0 && (
@@ -247,28 +246,28 @@ export default function Map() {
                     <div
                       key={station.id}
                       onClick={() => handleStationClick(station)}
-                      className="group "
                       style={{
                         position: "absolute",
                         left: `${station.x * xRatio}px`,
                         top: `${station.y * yRatio}px`,
-                        transform: "translate(-50%, -50%)",
+                        transform: "translate(-50%, -50%)", // center the marker correctly
                         cursor: "pointer",
                         zIndex: isStart || isTarget ? 30 : 20,
                       }}
                     >
-                      {/* Hit area only */}
-                      <div className="absolute inset-0 w-5 h-5 -translate-x-1/2 -translate-y-1/2"></div>
-
-                      {/* Marker (Tailwind controls size) */}
                       <div
-                        className={`transition-opacity duration-150 
-                          ${isStart || isTarget ? "opacity-100" : "opacity-0"}`}
+                        className={`${
+                          isStart || isTarget ? "opacity-100" : "opacity-0"
+                        } transition-opacity duration-150`}
                       >
                         <StationBadge
                           code={station.station_code.trim()}
                           lineColor={
-                            isStart ? "#1E90FF" : isTarget ? "#f87171" : "#000"
+                            isStart
+                              ? "#1E90FF"
+                              : isTarget
+                              ? "#f87171"
+                              : "transparent"
                           }
                         />
                       </div>

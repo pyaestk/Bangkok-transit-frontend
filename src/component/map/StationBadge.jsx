@@ -6,9 +6,7 @@ export default function StationBadge({ code, lineColor = "#000" }) {
     <svg
     className="w-1.5 h-1.5 md:w-3 md:h-3 xl:w-4.5 xl:h-4.5"
       viewBox="0 0 12 12"
-      preserveAspectRatio="xMidYMid meet"
-      style={{ pointerEvents: "none" }}
-    >
+      preserveAspectRatio="xMidYMid meet">
       <circle cx="6" cy="6" r="5" fill={lineColor} />
       <text
         x="50%"

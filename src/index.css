@@ -7,7 +7,6 @@ html, body {
 }
 
 
-
 @keyframes fadeIn {
   from { opacity: 0; transform: scale(0.95); }
   to { opacity: 1; transform: scale(1); }
@@ -15,30 +14,7 @@ html, body {
 .animate-fadeIn {
   animation: fadeIn 0.2s ease-out forwards;
 }
-.station-dot {
-  -webkit-text-size-adjust: none !important; 
-  text-size-adjust: none!important;
-}
 
-.station-label {
-  font-size: 1px !important;
-  line-height: 1;
-  display: inline-block;
-  -webkit-text-size-adjust: none !important;
-  text-size-adjust: none !important;
-}
-
-@media (min-width: 768px) {
-  .station-label {
-    font-size: 3px !important;
-  }
-}
-
-@media (min-width: 1280px) {
-  .station-label {
-    font-size: 4px !important;
-  }
-}
 
 
 
