@@ -16,7 +16,6 @@ export default function NavBar() {
     { to: "/planner", label: "Planner" },
     { to: "/routes", label: "Routes" },
     { to: "/stations", label: "Stations" },
-    { to: "/fares", label: "Fares" },
     { to: "/about", label: "About" },
   ];
 

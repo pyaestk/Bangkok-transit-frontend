@@ -187,7 +187,7 @@ export default function Map() {
     return <div className="text-red-400 p-4">Failed to load: {error}</div>;
 
   return (
-    <div className="flex flex-col sm:flex-row gap-5 text-white w-full">
+    <div className="flex flex-col sm:flex-row gap-5 text-white w-full max-w-7xl mx-auto">
       {/* Sidebar */}
       <div className="w-full md:w-100">
         <TripPlannerBox

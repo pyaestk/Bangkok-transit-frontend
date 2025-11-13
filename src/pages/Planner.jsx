@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import PreferencesDropdown from "../component/map/PreferencesDropDown";
 import { useStations } from "../hooks/useStations";
 import { useShortestPath } from "../hooks/useShortestPath";
 import { useCheapestPath } from "../hooks/useCheapestPath";
 import { useAllPaths } from "../hooks/useAllPaths";
 import { lineColors } from "../utils/lineColors";
+import { useLocation } from "react-router-dom";
+
 
 const LIGHT_TEXT_LINES = new Set([
   "MRT Yellow Line Monorail",
@@ -67,19 +68,45 @@ export default function Planner() {
     isLoading: isStationsLoading,
     error: stationsError,
   } = useStations();
+
   const [startInput, setStartInput] = useState("");
   const [startStationCode, setStartStationCode] = useState("");
+
   const [targetInput, setTargetInput] = useState("");
   const [targetStationCode, setTargetStationCode] = useState("");
   const [filteredStart, setFilteredStart] = useState([]);
   const [filteredTarget, setFilteredTarget] = useState([]);
-  const [preference, setPreference] = useState("Shortest");
   const [activeRoute, setActiveRoute] = useState(null);
   const [allRoutes, setAllRoutes] = useState([]);
   const [formError, setFormError] = useState("");
   const [manualSelection, setManualSelection] = useState(false);
 
   const [showDetailsOnly, setShowDetailsOnly] = useState(false);
+
+  const location = useLocation();
+  const prefillFrom = location.state?.from || "";
+  const prefillTo = location.state?.to || "";
+
+  useEffect(() => {
+    if (prefillFrom) setStartInput(prefillFrom);
+    if (prefillTo) setTargetInput(prefillTo);
+  }, [prefillFrom, prefillTo]);
+
+  useEffect(() => {
+  if (prefillFrom) {
+    setFilteredStart(getSuggestions(prefillFrom));
+  }
+  if (prefillTo) {
+    setFilteredTarget(getSuggestions(prefillTo));
+  }
+}, [stations]);
+useEffect(() => {
+  if (prefillFrom && prefillTo && stations.length > 0) {
+    handlePlanRoutes();
+  }
+}, [prefillFrom, prefillTo, stations]);
+
+
 
   const {
     pathData: shortestPayload,
@@ -141,10 +168,6 @@ export default function Planner() {
     setFilteredTarget([]);
   };
 
-  const handlePreferenceChange = (option) => {
-    setPreference(option);
-    setManualSelection(false);
-  };
 
   const handlePlanRoutes = async () => {
     const fromCode = resolveStationCode(startInput, startStationCode, stations);
@@ -211,12 +234,6 @@ export default function Planner() {
   useEffect(() => {
     if (manualSelection) return;
     const priority = [];
-    if (preference === "Cheapest" && resolvedCheapestRoute) {
-      priority.push(resolvedCheapestRoute);
-    }
-    if (preference === "All Routes" && resolvedAllRoutes[0]) {
-      priority.push(resolvedAllRoutes[0]);
-    }
     if (resolvedShortestRoute) priority.push(resolvedShortestRoute);
     if (resolvedCheapestRoute) priority.push(resolvedCheapestRoute);
     if (resolvedAllRoutes[0]) priority.push(resolvedAllRoutes[0]);
@@ -230,7 +247,6 @@ export default function Planner() {
     }
   }, [
     manualSelection,
-    preference,
     resolvedShortestRoute,
     resolvedCheapestRoute,
     resolvedAllRoutes,
@@ -320,22 +336,23 @@ export default function Planner() {
 
   return (
     <div className="text-white">
-      <div className="mx-auto max-w-7xl space-y-6">
-
-
-        <div className="grid gap-6 lg:grid-cols-[460px_1fr]">
+      <div className="mx-auto max-w-7xl space-y-10">
+          <header className="mx-2 mt-2">
+            {/* <p className="text-xs font-semibold uppercase tracking-[0.4em] text-[#32B67A]">
+              Smart Planner
+            </p> */}
+            <h1 className="text-2xl font-semibold">
+              Plan every hop with detail
+            </h1>
+            <p className="text-sm text-gray-400">
+              Select your stations, compare recommended routes, and follow the
+              full journey instructions without opening the big metro map.
+            </p>
+          </header>
+        <div className="grid gap-6 lg:grid-cols-[460px_1fr] h-full">
           {/* LEFT SIDE — Trip Input (Sticky) */}
           <div className="lg:sticky lg:top-20 h-fit">
-                  {/* <header className="mx-2 my-5">
-          <p className="text-xs font-semibold uppercase tracking-[0.4em] text-[#32B67A]">
-            Smart Planner
-          </p>
-          <h1 className="text-2xl font-semibold">Plan every hop with detail</h1>
-          <p className="text-sm text-gray-400">
-            Select your stations, compare recommended routes, and follow the
-            full journey instructions without opening the big metro map.
-          </p>
-        </header> */}
+
             <div className="border bg-gray-900/50 border-gray-800 rounded-2xl shadow-lg p-5">
               <div className="mb-4 space-y-1">
                 <h2 className="text-xl font-semibold">Trip inputs</h2>
@@ -344,7 +361,7 @@ export default function Planner() {
                 </p>
               </div>
 
-              <div className="flex flex-row items-center gap-3 justify-between">
+              <div className="flex flex-col items-center gap-3 justify-between">
                 <div className="w-full">
                   <StationInput
                     label="From"
@@ -370,14 +387,6 @@ export default function Planner() {
                 </div>
               </div>
 
-              <div className="mt-4 space-y-2">
-                <label className="text-sm text-gray-300">Preference</label>
-                <PreferencesDropdown
-                  selectedPreference={preference}
-                  onChange={handlePreferenceChange}
-                />
-              </div>
-
               <div className="mt-5 flex flex-col gap-3 sm:flex-row">
                 <button
                   type="button"
@@ -385,7 +394,7 @@ export default function Planner() {
                   disabled={isPlanning || isStationsLoading}
                   className="flex-1 rounded-lg bg-[#32B67A] py-2 text-sm font-semibold text-black transition hover:bg-[#2acc83] disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  {isPlanning ? "Planning route..." : "Plan smart route"}
+                  {isPlanning ? "Planning route..." : "Show route"}
                 </button>
                 <button
                   type="button"
@@ -414,7 +423,11 @@ export default function Planner() {
 
             {showDetailsOnly ? (
               <div>
-                <RouteDetailPanel route={activeRoute} isLoading={isPlanning} onBack={() => setShowDetailsOnly(false)} />
+                <RouteDetailPanel
+                  route={activeRoute}
+                  isLoading={isPlanning}
+                  onBack={() => setShowDetailsOnly(false)}
+                />
               </div>
             ) : (
               <>
@@ -423,7 +436,7 @@ export default function Planner() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-xs uppercase tracking-[0.3em] text-gray-500">
-                          Recommended route
+                          Recommended routes
                         </p>
                         <h3 className="text-lg font-semibold">
                           At-a-glance metrics
@@ -433,7 +446,23 @@ export default function Planner() {
                     <div className="mt-4 grid gap-3 sm:grid-cols-3 2xl:grid-cols-3 auto-rows-[1fr]">
                       {recommendedCards.map((card) => (
                         <div key={card.label} className="h-full">
-                          <RouteStatCard {...card} />
+                          <RouteStatCard
+                            {...card}
+                            onSelect={() => {
+                              const picked =
+                                card.label === "Cheapest"
+                                  ? resolvedCheapestRoute
+                                  : card.label === "Minimum Stations"
+                                  ? resolvedShortestRoute
+                                  : minTransferRoute;
+
+                              if (picked) {
+                                setActiveRoute(picked);
+                                setManualSelection(true);
+                                setShowDetailsOnly(true);
+                              }
+                            }}
+                          />
                         </div>
                       ))}
                     </div>
@@ -521,12 +550,18 @@ function StationInput({
         />
         {suggestions.length > 0 && (
           <ul
-            className="absolute left-0 right-0 top-full z-20 mt-2 max-h-60 overflow-y-auto rounded-2xl border border-white/10 bg-gray-900/95 shadow-2xl
-            [&::-webkit-scrollbar]:w-2
+            className="absolute left-0 right-0 top-full z-20 mt-2 max-h-38 rounded-2xl border border-white/10 bg-gray-900/95 shadow-2xl
+            overflow-y-auto transition-all duration-200 ease-out
+            scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-800
+            data-closed:scale-95 data-closed:opacity-0 data-closed:transform 
+            data-enter:duration-100 data-enter:ease-out 
+            data-leave:duration-75 data-leave:ease-in [&::-webkit-scrollbar]:w-2
             [&::-webkit-scrollbar-track]:rounded-full
-            [&::-webkit-scrollbar-track]:bg-gray-900
+            [&::-webkit-scrollbar-track]:bg-gray-100
             [&::-webkit-scrollbar-thumb]:rounded-full
-            [&::-webkit-scrollbar-thumb]:bg-gray-700"
+            [&::-webkit-scrollbar-thumb]:bg-gray-300
+            dark:[&::-webkit-scrollbar-track]:bg-neutral-700
+            dark:[&::-webkit-scrollbar-thumb]:bg-[#32B67A]"
           >
             {suggestions.map((station) => (
               <li
@@ -547,14 +582,18 @@ function StationInput({
   );
 }
 
-function RouteStatCard({ label, value, unit, detail, highlighted }) {
+function RouteStatCard({ label, value, unit, detail, highlighted, onSelect }) {
   const display = formatMetric(value) ?? "--";
+
+  const clickable = typeof onSelect === "function" && value !== null;
+
   return (
     <div
-      className={`rounded-2xl border p-4 transition ${
+      onClick={clickable ? onSelect : undefined}
+      className={`rounded-2xl border p-4 transition cursor-pointer ${
         highlighted
           ? "border-[#32B67A] bg-[#32B67A]/90 text-black shadow-lg shadow-[#32B67A]/30"
-          : "border-white/10 bg-black/30 text-white"
+          : "border-white/10 bg-black/30 text-white hover:border-white/20"
       }`}
     >
       <p
@@ -586,6 +625,7 @@ function RouteStatCard({ label, value, unit, detail, highlighted }) {
     </div>
   );
 }
+
 
 function RouteOptionCard({ route, onSelect, isActive }) {
   const stats = route?.stats || {};
@@ -683,7 +723,7 @@ function RouteDetailPanel({ route, isLoading,  onBack  }) {
           <p className="text-xs uppercase tracking-[0.4em] text-[#32B67A]">
             Step-by-step
           </p>
-          <h2 className="mt-1 text-2xl font-semibold">
+          <h2 className="my-2 text-2xl font-semibold">
             {route.path_type || "Recommended route"}
           </h2>
           <p className="text-sm text-gray-400">
@@ -720,19 +760,19 @@ function RouteDetailPanel({ route, isLoading,  onBack  }) {
       </div>
 
       <div className="mt-6 grid gap-3 text-sm text-gray-300 sm:grid-cols-3">
-        <div className="rounded-2xl border border-white/10 bg-black/20 p-3">
+        <div className="rounded-2xl bg-gray-900/50 border border-gray-800 p-3">
           <p className="text-xs uppercase text-gray-500">Stations</p>
           <p className="text-xl font-semibold">
             {stats.total_stations ?? "--"}
           </p>
         </div>
-        <div className="rounded-2xl border border-white/10 bg-black/20 p-3">
+        <div className="rounded-2xl bg-gray-900/50 border border-gray-800 p-3">
           <p className="text-xs uppercase text-gray-500">Transfers</p>
           <p className="text-xl font-semibold">
             {stats.total_transfers ?? "--"}
           </p>
         </div>
-        <div className="rounded-2xl border border-white/10 bg-black/20 p-3">
+        <div className="rounded-2xl bg-gray-900/50 border border-gray-800 p-3">
           <p className="text-xs uppercase text-gray-500">Lines used</p>
           <p className="text-xl font-semibold">{stats.total_lines ?? "--"}</p>
         </div>

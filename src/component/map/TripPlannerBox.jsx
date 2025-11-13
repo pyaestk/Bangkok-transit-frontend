@@ -199,7 +199,7 @@ export default function TripPlannerBox({
     shortestError || cheapestError || allError;
 
   return (
-    <div className="bg-gray-900/50 border border-gray-800 rounded-2xl shadow-lg w-full max-h-[80vh] text-white flex flex-col transition-all duration-300">
+    <div className="bg-gray-900/50 border border-gray-800 rounded-2xl shadow-lg w-full max-h-[83vh] text-white flex flex-col transition-all duration-300">
       {!showResult ? (
         // === Trip Planner Form ===
         <div className="p-4">
@@ -213,7 +213,7 @@ export default function TripPlannerBox({
               onChange={handleStartInput}
               placeholder="Enter Start Station"
               type="text"
-              className="w-full text-sm px-3 py-2 rounded-lg bg-black/30 border border-white/10 focus:outline-none"
+              className="w-full text-sm px-3 py-2 rounded-lg bg-black/30 border border-white/10 outline-none transition focus:border-[#32B67A] disabled:cursor-not-allowed disabled:opacity-50"
             />
             {filteredStart.length > 0 && (
               <ul
@@ -252,7 +252,7 @@ export default function TripPlannerBox({
               onChange={handleTargetInput}
               placeholder="Enter Target Station"
               type="text"
-              className="w-full text-sm px-3 py-2 rounded-lg bg-black/30 border border-white/10 focus:outline-none"
+              className="w-full text-sm px-3 py-2 rounded-lg bg-black/30 border border-white/10 outline-none transition focus:border-[#32B67A] disabled:cursor-not-allowed disabled:opacity-50"
             />
             {filteredTarget.length > 0 && (
               <ul
