@@ -3,6 +3,7 @@ import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { useStations } from "../hooks/useStations";
 import { useLocation } from "react-router-dom";
 import TripPlannerBox from "../component/map/TripPlannerBox";
+import StationBadge from "../component/map/StationBadge";
 
 export default function Map() {
   const transformRef = useRef(null);
@@ -237,34 +238,55 @@ export default function Map() {
                 )}
 
                 {/* --- Main Stations --- */}
+                {/* --- Main Stations (hover only unless selected) --- */}
                 {stations.map((station) => {
                   const isStart = station.id === startStation?.id;
                   const isTarget = station.id === targetStation?.id;
 
-                  const colorClasses = isStart
-                    ? "bg-[#2acc83] text-black z-30"
-                    : isTarget
-                    ? "bg-red-400 text-black z-30"
-                    : "bg-transparent z-20";
-
                   return (
                     <div
                       key={station.id}
-                      title={station.name_en}
                       onClick={() => handleStationClick(station)}
-                      className={`station-dot absolute flex items-center justify-center 
-                        w-[6px] h-[6px] md:w-[10px] md:h-[10px] xl:w-[12px] xl:h-[12px]
-                        rounded-full cursor-pointer select-none 
-                        ${colorClasses}`}
+                      className="group" // enables hover effects
                       style={{
+                        position: "absolute",
                         left: `${station.x * xRatio}px`,
                         top: `${station.y * yRatio}px`,
                         transform: "translate(-50%, -50%)",
+                        cursor: "pointer",
+                        zIndex: isStart || isTarget ? 30 : 20,
                       }}
                     >
-                      <span className="station-label font-semibold">
-                        {(isStart || isTarget) && station.station_code.trim()}
-                      </span>
+                      {/* Invisible clickable hit area */}
+                      <div
+                        style={{
+                          width: 22,
+                          height: 22,
+                          borderRadius: "50%",
+                          position: "absolute",
+                          top: "50%",
+                          left: "50%",
+                          transform: "translate(-50%, -50%)",
+                          backgroundColor: "transparent",
+                        }}
+                      ></div>
+
+                      {/* Badge: only visible on hover OR if selected */}
+                      <div
+                        className={`transition-opacity duration-150 
+          ${
+            isStart || isTarget
+              ? "opacity-100"
+              : "opacity-0 group-hover:opacity-100"
+          }`}
+                      >
+                        <StationBadge
+                          code={station.station_code.trim()}
+                          lineColor={
+                            isStart ? "#2acc83" : isTarget ? "#f87171" : "#000"
+                          }
+                        />
+                      </div>
                     </div>
                   );
                 })}
@@ -273,43 +295,37 @@ export default function Map() {
                 {routeStations.map((station, index) => (
                   <div
                     key={index}
-                    title={station.station_code}
-                    className="station-dot absolute flex items-center justify-center 
-                      w-[6px] h-[6px] md:w-[10px] md:h-[10px] xl:w-[12px] xl:h-[12px]
-                      rounded-full cursor-default select-none 
-                     bg-[#00ff8c] text-black z-20"
                     style={{
+                      position: "absolute",
                       left: `${station.x * xRatio}px`,
                       top: `${station.y * yRatio}px`,
-                      transform: "translate(-50%, -50%) ",
+                      transform: "translate(-50%, -50%)",
+                      zIndex: 20,
                     }}
                   >
-                    <span className="station-label font-semibold">
-                      {station.station_code.trim()}
-                    </span>
+                    <StationBadge
+                      code={station.station_code.trim()}
+                      lineColor="#00ff8c"
+                    />
                   </div>
                 ))}
                 {/* Animated "Train" / Traveling Dot */}
                 {activeIndex >= 0 && routeStations[activeIndex] && (
                   <div
                     key={activeIndex}
-                    title={routeStations[activeIndex].station_code}
-                    className={`station-dot absolute flex items-center justify-center 
-                      w-[6px] h-[6px] md:w-[10px] md:h-[10px] xl:w-[12px] xl:h-[12px]
-                       rounded-full border cursor-default select-none
-                      bg-red-400 border-red-600 text-black z-30
-                      transition-all duration-300  ${
-                        isAnimating ? "opacity-100" : "opacity-0"
-                      }`}
                     style={{
+                      position: "absolute",
                       left: `${routeStations[activeIndex].x * xRatio}px`,
                       top: `${routeStations[activeIndex].y * yRatio}px`,
-                      transform: "translate(-50%, -50%) ",
+                      transform: "translate(-50%, -50%)",
+                      zIndex: 30,
+                      opacity: isAnimating ? 1 : 0,
                     }}
                   >
-                    <span className="station-label font-semibold">
-                      {routeStations[activeIndex].station_code.trim()}
-                    </span>
+                    <StationBadge
+                      code={routeStations[activeIndex].station_code.trim()}
+                      lineColor="#ef4444"
+                    />
                   </div>
                 )}
               </div>
