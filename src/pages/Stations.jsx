@@ -66,7 +66,7 @@ export default function Stations() {
   }
 
   return (
-    <div className="flex flex-col sm:flex-row gap-5 text-white w-full">
+    <div className="flex flex-col sm:flex-row gap-5 text-white w-full mx-auto max-w-7xl">
       {/* Left Filter Card */}
       <div className="w-full md:w-90">
         <FiltersCard
@@ -76,7 +76,7 @@ export default function Stations() {
       </div>
 
       {/* Right Result Box */}
-      <div className="flex-1 rounded-2xl bg-gray-900/50 border border-gray-800 shadow-lg h-[80vh] p-4 text-white flex flex-col">
+      <div className="flex-1 rounded-2xl bg-gray-900/50 border border-gray-800 shadow-lg h-[83vh] p-4 text-white flex flex-col">
         <h2 className="text-lg font-bold mb-3">Stations</h2>
 
         <div
@@ -117,7 +117,7 @@ export default function Stations() {
                   {filteredStations.map((station) => (
                     <li
                       key={station.station_code}
-                      className="flex items-center justify-between p-3 rounded-lg bg-black/30 border border-white/10 hover:bg-black/10 transition"
+                      className="flex items-center justify-between p-3 rounded-lg bg-black/30 border border-white/10 hover:bg-black/10 hover:border-[#32B67A]  transition"
                     >
                       {/* Line color indicator */}
                       <div

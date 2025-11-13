@@ -13,10 +13,9 @@ export default function NavBar() {
   const links = [
     { to: "/", label: "Home" },
     { to: "/map", label: "Map" },
+    { to: "/planner", label: "Planner" },
     { to: "/routes", label: "Routes" },
     { to: "/stations", label: "Stations" },
-    { to: "/fares", label: "Fares" },
-    { to: "/planner", label: "Planner" },
     { to: "/about", label: "About" },
   ];
 

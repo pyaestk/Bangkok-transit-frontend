@@ -6,7 +6,6 @@ import Map from "./pages/Map";
 import Planner from "./pages/Planner";
 import Stations from "./pages/Stations";
 import TrainRoutes from "./pages/TrainRoutes";
-import Fares from "./pages/Fares";
 import About from "./pages/About";
 
 function App() {
@@ -24,7 +23,6 @@ function App() {
             <Route path="/planner" element={<Planner />} />
             <Route path="/routes" element={<TrainRoutes />} />
             <Route path="/stations" element={<Stations/>} />
-            <Route path="/fares" element={<Fares />} />
             <Route path="/about" element={<About />} />
           </Routes>
         </main>

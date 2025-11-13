@@ -28,6 +28,7 @@ export default function Map() {
   const [resetTrigger, setResetTrigger] = useState(0);
 
   const [showHelp, setShowHelp] = useState(false);
+  
 
   // for Size of Map Picture
   const ORIGINAL_WIDTH = 841.89;
@@ -186,7 +187,7 @@ export default function Map() {
     return <div className="text-red-400 p-4">Failed to load: {error}</div>;
 
   return (
-    <div className="flex flex-col sm:flex-row gap-5 text-white w-full">
+    <div className="flex flex-col sm:flex-row gap-5 text-white w-full max-w-7xl mx-auto">
       {/* Sidebar */}
       <div className="w-full md:w-100">
         <TripPlannerBox
@@ -198,7 +199,7 @@ export default function Map() {
       </div>
 
       {/* Map */}
-      <div className="relative border border-white/10 h-[80vh] w-full flex-1 rounded-2xl bg-gradient-to-b from-gray-800 to-gray-900 shadow-lg text-white">
+      <div className="relative border border-white/10 h-[83vh] w-full flex-1 rounded-2xl bg-gradient-to-b from-gray-800 to-gray-900 shadow-lg text-white">
         <div className="bg-white rounded-lg h-full flex items-center justify-center overflow-hidden relative">
           {/* --- Dim overlay when route is shown --- */}
           {routeStations.length > 0 && (
@@ -238,7 +239,6 @@ export default function Map() {
                 )}
 
                 {/* --- Main Stations --- */}
-                {/* --- Main Stations (hover only unless selected) --- */}
                 {stations.map((station) => {
                   const isStart = station.id === startStation?.id;
                   const isTarget = station.id === targetStation?.id;
@@ -247,43 +247,28 @@ export default function Map() {
                     <div
                       key={station.id}
                       onClick={() => handleStationClick(station)}
-                      className="group" // enables hover effects
                       style={{
                         position: "absolute",
                         left: `${station.x * xRatio}px`,
                         top: `${station.y * yRatio}px`,
-                        transform: "translate(-50%, -50%)",
+                        transform: "translate(-50%, -50%)", // center the marker correctly
                         cursor: "pointer",
                         zIndex: isStart || isTarget ? 30 : 20,
                       }}
                     >
-                      {/* Invisible clickable hit area */}
                       <div
-                        style={{
-                          width: 22,
-                          height: 22,
-                          borderRadius: "50%",
-                          position: "absolute",
-                          top: "50%",
-                          left: "50%",
-                          transform: "translate(-50%, -50%)",
-                          backgroundColor: "transparent",
-                        }}
-                      ></div>
-
-                      {/* Badge: only visible on hover OR if selected */}
-                      <div
-                        className={`transition-opacity duration-150 
-          ${
-            isStart || isTarget
-              ? "opacity-100"
-              : "opacity-0 group-hover:opacity-100"
-          }`}
+                        className={`${
+                          isStart || isTarget ? "opacity-100" : "opacity-0"
+                        } transition-opacity duration-150`}
                       >
                         <StationBadge
                           code={station.station_code.trim()}
                           lineColor={
-                            isStart ? "#2acc83" : isTarget ? "#f87171" : "#000"
+                            isStart
+                              ? "#1E90FF"
+                              : isTarget
+                              ? "#f87171"
+                              : "transparent"
                           }
                         />
                       </div>

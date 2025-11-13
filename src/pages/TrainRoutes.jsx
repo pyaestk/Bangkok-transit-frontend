@@ -142,7 +142,7 @@ export default function TrainRoutes() {
   return (
     <div className="mx-auto w-full max-w-7xl ">
       {/* <h1 className="text-3xl font-bold text-gray-100 mb-6">Routes</h1> */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <LineCard title="BTS" items={LINES.BTS} />
         <LineCard title="SRT & Airport" items={LINES.SRT} />
         <LineCard title="MRT" items={LINES.MRT} />
