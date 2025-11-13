@@ -1,18 +1,19 @@
+// StationBadge.jsx
 export default function StationBadge({ code, lineColor = "#000" }) {
   if (!code) return null;
 
   return (
     <svg
-      width="12"
-      height="12"
+    className="w-1.5 h-1.5 md:w-3 md:h-3 xl:w-4.5 xl:h-4.5"
       viewBox="0 0 12 12"
+      preserveAspectRatio="xMidYMid meet"
       style={{ pointerEvents: "none" }}
     >
       <circle cx="6" cy="6" r="5" fill={lineColor} />
       <text
         x="50%"
         y="50%"
-        fill="#000"  
+        fill="#000"
         fontSize="3.5"
         fontWeight="bold"
         textAnchor="middle"

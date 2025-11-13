@@ -28,6 +28,7 @@ export default function Map() {
   const [resetTrigger, setResetTrigger] = useState(0);
 
   const [showHelp, setShowHelp] = useState(false);
+  
 
   // for Size of Map Picture
   const ORIGINAL_WIDTH = 841.89;
@@ -238,7 +239,6 @@ export default function Map() {
                 )}
 
                 {/* --- Main Stations --- */}
-                {/* --- Main Stations (hover only unless selected) --- */}
                 {stations.map((station) => {
                   const isStart = station.id === startStation?.id;
                   const isTarget = station.id === targetStation?.id;
@@ -247,7 +247,7 @@ export default function Map() {
                     <div
                       key={station.id}
                       onClick={() => handleStationClick(station)}
-                      className="group" // enables hover effects
+                      className="group "
                       style={{
                         position: "absolute",
                         left: `${station.x * xRatio}px`,
@@ -257,33 +257,18 @@ export default function Map() {
                         zIndex: isStart || isTarget ? 30 : 20,
                       }}
                     >
-                      {/* Invisible clickable hit area */}
-                      <div
-                        style={{
-                          width: 22,
-                          height: 22,
-                          borderRadius: "50%",
-                          position: "absolute",
-                          top: "50%",
-                          left: "50%",
-                          transform: "translate(-50%, -50%)",
-                          backgroundColor: "transparent",
-                        }}
-                      ></div>
+                      {/* Hit area only */}
+                      <div className="absolute inset-0 w-5 h-5 -translate-x-1/2 -translate-y-1/2"></div>
 
-                      {/* Badge: only visible on hover OR if selected */}
+                      {/* Marker (Tailwind controls size) */}
                       <div
                         className={`transition-opacity duration-150 
-          ${
-            isStart || isTarget
-              ? "opacity-100"
-              : "opacity-0 group-hover:opacity-100"
-          }`}
+                          ${isStart || isTarget ? "opacity-100" : "opacity-0"}`}
                       >
                         <StationBadge
                           code={station.station_code.trim()}
                           lineColor={
-                            isStart ? "#2acc83" : isTarget ? "#f87171" : "#000"
+                            isStart ? "#1E90FF" : isTarget ? "#f87171" : "#000"
                           }
                         />
                       </div>
