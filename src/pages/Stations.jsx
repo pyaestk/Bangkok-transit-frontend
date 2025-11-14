@@ -73,33 +73,61 @@ export default function Stations() {
           selectedStation={selectedStation}
           onFilterChange={handleFilterChange}
         />
+
+        {/* Button Guide */}
+        <div className="mt-4 p-3 rounded-xl bg-black/20 border border-white/10">
+          <p className="text-sm font-semibold text-gray-300 mb-2">
+            Button Guide
+          </p>
+
+          <p className="text-gray-500 text-xs leading-relaxed">
+            <span className="font-semibold text-gray-300">Map</span> - View
+            station on the transit map.
+            <br />
+            <span className="font-semibold text-gray-300">From</span> - Set as
+            your starting point.
+            <br />
+            <span className="font-semibold text-gray-300">To</span> - Set as
+            your destination.
+          </p>
+        </div>
       </div>
 
       {/* Right Result Box */}
-      <div className="flex-1 rounded-2xl bg-gray-900/40 border border-gray-800/60 shadow-lg h-[83vh] p-2 text-white flex flex-col">
-        <h2 className="text-lg font-bold mb-4 px-3 pt-1">Stations</h2>
+      <div className="
+        flex-1 rounded-2xl bg-gray-900/40 border border-gray-800/60 shadow-lg 
+        text-white flex flex-col p-2
+
+        min-h-[70vh]
+        h-[calc(100vh-160px)]
+        md:h-[83vh]
+      ">
+
+        <h2 className="text-lg font-bold mb-4 px-3 pt-1">
+          Stations <span>({filteredStations.length})</span>
+        </h2>
 
         <div
           className="flex-1 overflow-y-auto pr-2 rounded-2xl bg-black/30 border border-gray-800/60 shadow-lg
-      [&::-webkit-scrollbar]:w-2
-      [&::-webkit-scrollbar-track]:rounded-full
-      [&::-webkit-scrollbar-track]:bg-gray-700/40
-      [&::-webkit-scrollbar-thumb]:rounded-full
-      [&::-webkit-scrollbar-thumb]:bg-[#32B67A]/70
-      hover:[&::-webkit-scrollbar-thumb]:bg-[#32B67A"
+            [&::-webkit-scrollbar]:w-2
+            [&::-webkit-scrollbar-track]:rounded-full
+            [&::-webkit-scrollbar-track]:bg-gray-700/40
+            [&::-webkit-scrollbar-thumb]:rounded-full
+            [&::-webkit-scrollbar-thumb]:bg-[#32B67A]/70
+            hover:[&::-webkit-scrollbar-thumb]:bg-[#32B67A"
         >
           {isLoading && (
-            <div className="flex flex-col items-center justify-center h-full text-center">
+            <div className="flex flex-col items-center justify-center min-h-[60vh] md:min-h-[70vh] text-center">
               <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#32B67A] mb-4"></div>
-              <p className="text-sm text-gray-300 opacity-80">
+              <p className="text-sm text-gray-300 opacity-80 flex items-center justify-center">
                 Loading stations...
               </p>
             </div>
           )}
 
           {!isLoading && error && (
-            <div className="flex flex-col items-center justify-center h-full text-center">
-              <p className="text-red-400 font-semibold">
+            <div className="flex flex-col items-center justify-center min-h-[60vh] md:min-h-[70vh] text-center">
+              <p className="text-red-400 font-semibold flex items-center justify-center">
                 Failed to load stations
               </p>
               <p className="text-gray-400 text-sm mt-1">{error}</p>
@@ -109,7 +137,7 @@ export default function Stations() {
           {!isLoading && !error && (
             <>
               {filteredStations.length === 0 ? (
-                <p className="text-gray-400 text-sm mt-2">
+                <p className="text-gray-400 text-sm h-full w-full flex items-center justify-center">
                   No stations match your filter.
                 </p>
               ) : (

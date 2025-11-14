@@ -29,7 +29,7 @@ export default function Home() {
   return (
     <div className="w-full h-full max-w-7xl mx-auto text-white flex flex-col">
       <div className="w-full grid grid-cols-1 md:grid-cols-5 gap-5">
-        <div className="col-span-1 md:col-span-3 bg-gradient-to-b from-gray-900 to-gray-950 border border-gray-800 rounded-2xl shadow-lg p-6 md:p-10">
+        <div className="flex flex-col justify-center col-span-1 md:col-span-3 bg-gradient-to-b from-gray-900 to-gray-950 border border-gray-800 hover:border-green-700 transition ease-in rounded-2xl shadow-lg p-6 md:p-10">
           <h1 className="text-3xl md:text-4xl font-bold mb-3">
             Navigate Bangkok smarter
           </h1>
@@ -41,19 +41,16 @@ export default function Home() {
 
           {/* Tags */}
           <div className="flex flex-wrap gap-2 mb-6 uppercase tracking-[0.2em] text-xs">
-            {[
-              "Real-time style UI",
-              "Mobile-first",
-              "Dark UI",
-              "Keyboard friendly",
-            ].map((t) => (
-              <span
-                key={t}
-                className="px-3 py-1 text-xs rounded-lg bg-white/5 border border-white/10"
-              >
-                {t}
-              </span>
-            ))}
+            {["Modern UI", "Accurate Data", "Dark UI", "Keyboard friendly"].map(
+              (t) => (
+                <span
+                  key={t}
+                  className="px-3 py-1 text-xs rounded-lg bg-white/5 border border-white/10"
+                >
+                  {t}
+                </span>
+              )
+            )}
           </div>
 
           {/* Buttons */}
@@ -80,14 +77,14 @@ export default function Home() {
         </div>
 
         {/* Quick Planner */}
-        <div className="col-span-1 md:col-span-2 bg-gray-900/50 border border-gray-800 rounded-2xl shadow-lg p-6 flex flex-col justify-center">
-          <h3 className="text-lg font-semibold mb-4">Quick Planner</h3>
+        <div className="col-span-1 md:col-span-2 rounded-2xl bg-gray-900/50 border border-white/10 hover:border-green-700 transition ease-in shadow-lg p-6 flex flex-col justify-center">
+          <h3 className="text-lg font-semibold mb-1">Quick Planner</h3>
           <p className="text-gray-400 text-xs mb-4 uppercase tracking-[0.2em]">
             Plan Route
           </p>
           <div className="flex flex-col gap-4 justify-center">
             {/* FROM */}
-            <label className="block mx-1 text-sm">From</label>
+            <label className="block text-sm">From</label>
             <div className="relative">
               <input
                 value={quickFrom}
@@ -136,7 +133,7 @@ export default function Home() {
             </div>
 
             {/* TO */}
-            <label className="block mx-1 text-sm">To</label>
+            <label className="block text-sm">To</label>
             <div className="relative">
               <input
                 value={quickTo}
@@ -200,7 +197,17 @@ export default function Home() {
               Open in Planner
             </button>
 
-            <button className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10">
+            <button
+              onClick={() =>
+                navigate("/map", {
+                  state: {
+                    startStation: quickFrom, // or station_code if preferred
+                    targetStation: quickTo,
+                  },
+                })
+              }
+              className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10"
+            >
               Open in Map
             </button>
           </div>
@@ -208,9 +215,9 @@ export default function Home() {
       </div>
 
       {/* ===================== Stats Section ===================== */}
-      <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-5 mt-5 ">
+      <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-5 mt-5  ">
         <StatBox label="Total Lines" value="10" />
-        <StatBox label="Total Stations" value="240+ " />
+        <StatBox label="Total Stations" value="190+ " />
         <StatBox label="Coverage" value="Citywide" />
         <StatBox label="Network" value="2025" />
       </div>
@@ -262,7 +269,7 @@ export default function Home() {
 
 function StatBox({ label, value }) {
   return (
-    <div className="bg-gray-900/50 border border-gray-800 rounded-2xl shadow-lg p-4 ">
+    <div className="bg-gray-900/50 border border-gray-800 rounded-2xl shadow-lg p-4 hover:border-green-700 transition ease-in">
       <p className="text-gray-400 text-xs mb-1 uppercase tracking-[0.2em]">{label}</p>
       <h2 className="text-xl font-bold">{value}</h2>
     </div>

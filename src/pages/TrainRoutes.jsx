@@ -99,7 +99,7 @@ function LineCard({ title, items }) {
         {items.map((ln) => (
           <div
             key={ln.key}
-            className="flex items-center justify-between px-2 py-2"
+            className="flex items-center justify-between px-1 md:px-2 py-2"
           >
             <div className="flex items-center gap-5">
               {/* Color indicator */}

@@ -51,8 +51,10 @@ export default function FiltersCard({ onFilterChange, selectedStation }) {
         className="w-full text-sm px-3 py-2 rounded-lg bg-black/30 border border-white/10 placeholder-gray-400 focus:outline-none"
       />
 
-      <p className="text-gray-500 text-xs mt-3 mx-1">
-        Tip: Click “From” or “To” to send to the Planner.
+      {/* Filter Tip */}
+      <p className="text-gray-500 text-xs mt-3 mx-1 leading-relaxed">
+        Tip: Use the Line dropdown to
+        filter by transit line, or search by name or station code.
       </p>
     </div>
   );
