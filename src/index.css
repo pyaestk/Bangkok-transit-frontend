@@ -3,9 +3,8 @@
 html, body {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  -ms-text-size-adjust: 100%; /* for older WebViews */
+  -ms-text-size-adjust: 100%;
 }
-
 
 @keyframes fadeIn {
   from { opacity: 0; transform: scale(0.95); }
@@ -14,8 +13,4 @@ html, body {
 .animate-fadeIn {
   animation: fadeIn 0.2s ease-out forwards;
 }
-
-
-
-
 

@@ -204,7 +204,9 @@ export default function TripPlannerBox({
         // === Trip Planner Form ===
         <div className="p-4">
           <h2 className="text-lg font-bold mb-3 mx-1">Trip Planner</h2>
-
+          <p className="text-gray-400 text-xs mx-1 mb-4 uppercase tracking-[0.2em]">
+            Choose your stations
+          </p>
           {/* From */}
           <label className="block mb-2 mx-1 text-sm">From</label>
           <div className="relative" ref={startRef}>
@@ -301,7 +303,8 @@ export default function TripPlannerBox({
           </button>
 
           <p className="text-gray-500 text-xs mt-6 mx-1">
-            Tip: Type or click on stations to set your start and destination - suggestions appear as you type.
+            Tip: Type or click on stations to set your start and destination -
+            suggestions appear as you type.
           </p>
 
           {error && <p className="text-red-400 text-sm mt-2">{error}</p>}

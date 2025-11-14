@@ -415,9 +415,8 @@ useEffect(() => {
                 <p className="mt-3 text-xs text-red-300">{plannerError}</p>
               )}
               {!plannerError && (
-                <p className="mt-5 text-xs text-gray-500">
-                  Tip: You can paste station codes (e.g. BL01) or names and we
-                  will auto-match them.
+                <p className="mt-7 text-xs text-gray-500">
+                  Tip: You can choose stations from suggestion drop-down
                 </p>
               )}
             </div>
@@ -441,7 +440,7 @@ useEffect(() => {
                   <div className="rounded-2xl border border-white/10 bg-black/40 p-5 h-full">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-xs uppercase tracking-[0.3em] text-gray-500">
+                        <p className="text-xs uppercase tracking-[0.2em] text-gray-500">
                           Recommended routes
                         </p>
                         <h3 className="text-lg font-semibold">
@@ -478,7 +477,7 @@ useEffect(() => {
                   <div className="border bg-gray-900/50 border-gray-800 rounded-2xl shadow-lg p-5 h-full flex flex-col">
                     <div className="mb-3 flex items-center justify-between">
                       <div>
-                        <p className="text-xs uppercase tracking-[0.3em] text-gray-500">
+                        <p className="text-xs uppercase tracking-[0.2em] text-gray-500">
                           All path
                         </p>
                         <h3 className="text-lg font-semibold">
@@ -658,7 +657,7 @@ function RouteOptionCard({ route, onSelect, isActive }) {
     >
       <div className="flex items-center justify-between text-xs uppercase tracking-wide text-gray-400">
         <span>{route?.path_type || "Route"}</span>
-        {isActive && <span className="text-[#32B67A]">Viewed</span>}
+        {/* {isActive && <span className="text-[#32B67A]">Viewed</span>} */}
       </div>
       <div className="mt-2 text-2xl font-semibold">
         {formatMetric(route?.fare_total) ?? "--"}
@@ -732,10 +731,10 @@ function RouteDetailPanel({ route, isLoading,  onBack  }) {
             <h2 className="my-1 text-2xl font-semibold">
               {route.path_type || "Recommended route"}
             </h2>
-            {/* <p className="text-sm text-gray-400">
+            <p className="text-sm text-gray-400">
               {formatMetric(route.fare_total) ?? "--"} THB ·{" "}
               {stats.total_stations ?? "--"} stations
-            </p> */}
+            </p>
           </div>
 
           {/* RIGHT SIDE BUTTON */}
@@ -750,8 +749,8 @@ function RouteDetailPanel({ route, isLoading,  onBack  }) {
 
         {startStep && endStep && (
           <div className="text-sm text-gray-300">
-            <div>
-              <p className="text-xs uppercase text-gray-500">From</p>
+            <div className="flex items-center">
+              <p className="text-sm  text-gray-500 me-2">From:</p>
               <p className="font-semibold">
                 {startStep.station?.name || startStep.station?.name_en || "--"}{" "}
                 {startStep.station?.code || startStep.station?.station_code
@@ -761,8 +760,8 @@ function RouteDetailPanel({ route, isLoading,  onBack  }) {
                   : ""}
               </p>
             </div>
-            <div className="mt-3">
-              <p className="text-xs uppercase text-gray-500">To</p>
+            <div className="mt-3 flex items-center">
+              <p className="text-sm text-gray-500 me-2">To:</p>
               <p className="font-semibold">
                 {endStep.station?.name || endStep.station?.name_en || "--"}{" "}
                 {endStep.station?.code || endStep.station?.station_code
@@ -774,31 +773,6 @@ function RouteDetailPanel({ route, isLoading,  onBack  }) {
             </div>
           </div>
         )}
-      </div>
-
-      <div className="mt-6 grid gap-3 text-sm text-gray-300 sm:grid-cols-4">
-        <div className="rounded-lg bg-gray-900/50 border border-gray-800 p-3">
-          <p className="text-xs uppercase text-gray-500">Fare</p>
-          <p className="text-xl font-semibold mt-2">
-            {route.fare_total ?? "--"} THB
-          </p>
-        </div>
-        <div className="rounded-lg bg-gray-900/50 border border-gray-800 p-3">
-          <p className="text-xs uppercase text-gray-500">Stations</p>
-          <p className="text-xl font-semibold mt-2">
-            {stats.total_stations ?? "--"}
-          </p>
-        </div>
-        <div className="rounded-lg bg-gray-900/50 border border-gray-800 p-3">
-          <p className="text-xs uppercase text-gray-500">Transfers</p>
-          <p className="text-xl font-semibold mt-2">
-            {stats.total_transfers ?? "--"}
-          </p>
-        </div>
-        <div className="rounded-lg bg-gray-900/50 border border-gray-800 p-3">
-          <p className="text-xs uppercase text-gray-500">Lines used</p>
-          <p className="text-xl font-semibold mt-2">{stats.total_lines ?? "--"}</p>
-        </div>
       </div>
       {/* bg-gradient-to-b from-[#32B67A]/70 to-transparent */}
       <div
@@ -819,14 +793,15 @@ function RouteDetailPanel({ route, isLoading,  onBack  }) {
                 key={`${step.station?.code || index}-${index}`}
                 className="flex gap-4"
               >
-                <div className="flex flex-col items-center">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full border border-[#32B67A] text-sm font-semibold text-white">
+                <div className="flex flex-col items-center ">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#32B67A] text-sm font-semibold text-white">
                     {index + 1}
                   </span>
                   {index !== steps.length - 1 && (
-                    <span className="mt-1 h-full w-px bg-[#32B67A]"></span>
+                    <span className="h-full w-px bg-[#32B67A]"></span>
                   )}
                 </div>
+
                 <div className="flex-1 rounded-2xl border border-white/10 bg-black/25 p-4">
                   <p className="text-sm font-semibold">
                     {step.action || "Continue"}
