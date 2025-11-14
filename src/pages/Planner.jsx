@@ -14,6 +14,12 @@ const LIGHT_TEXT_LINES = new Set([
   "BTS Sukhumvit Line",
 ]);
 
+const ICONS = {
+  "Cheapest": "/fare.png",
+  "Minimum Stations": "/station.png",
+  "Minimum Transfer": "/transfer.png",
+};
+
 const unwrapRoutePayload = (payload) => {
   if (!payload) return null;
   return payload.data ?? payload;
@@ -586,24 +592,29 @@ function RouteStatCard({ label, value, unit, detail, highlighted, onSelect }) {
   const display = formatMetric(value) ?? "--";
 
   const clickable = typeof onSelect === "function" && value !== null;
+  const iconSrc = ICONS[label];
 
   return (
     <div
       onClick={clickable ? onSelect : undefined}
-      className={`rounded-2xl border p-4 transition cursor-pointer ${
+      className={`rounded-lg border p-4 transition cursor-pointer ${
         highlighted
           ? "border-[#32B67A] bg-[#32B67A]/90 text-black shadow-lg shadow-[#32B67A]/30"
           : "border-white/10 bg-black/30 text-white hover:border-white/20"
       }`}
     >
       <p
-        className={`text-xs uppercase tracking-wide ${
+        className={`flex items-center gap-2 text-xs uppercase tracking-wide font-semibold ${
           highlighted ? "text-black/70" : "text-gray-400"
         }`}
       >
+        {iconSrc && (
+          <img src={iconSrc} alt={label} className="w-6 h-6 object-contain" />
+        )}
         {label}
       </p>
-      <div className="mt-2 flex items-baseline gap-2">
+
+      <div className="mt-4 flex items-baseline gap-2">
         <span className="text-3xl font-semibold">{display}</span>
         {unit && (
           <span
@@ -615,13 +626,13 @@ function RouteStatCard({ label, value, unit, detail, highlighted, onSelect }) {
           </span>
         )}
       </div>
-      <p
+      {/* <p
         className={`mt-2 text-sm ${
           highlighted ? "text-black/70" : "text-gray-400"
         }`}
       >
         {detail || "Plan a trip to unlock"}
-      </p>
+      </p> */}
     </div>
   );
 }
@@ -639,7 +650,7 @@ function RouteOptionCard({ route, onSelect, isActive }) {
     <button
       type="button"
       onClick={onSelect}
-      className={`w-full rounded-2xl border p-4 text-left transition ${
+      className={`w-full rounded-lg border p-4 text-left transition ${
         isActive
           ? "border-[#32B67A] bg-black/60 shadow-lg shadow-[#32B67A]/20"
           : "border-white/10 bg-black/30 hover:border-white/30"
@@ -647,7 +658,7 @@ function RouteOptionCard({ route, onSelect, isActive }) {
     >
       <div className="flex items-center justify-between text-xs uppercase tracking-wide text-gray-400">
         <span>{route?.path_type || "Route"}</span>
-        {isActive && <span className="text-[#32B67A]">Selected</span>}
+        {isActive && <span className="text-[#32B67A]">Viewed</span>}
       </div>
       <div className="mt-2 text-2xl font-semibold">
         {formatMetric(route?.fare_total) ?? "--"}
@@ -684,7 +695,7 @@ function RouteOptionCard({ route, onSelect, isActive }) {
 function RouteDetailPanel({ route, isLoading,  onBack  }) {
   if (isLoading) {
     return (
-      <div className="flex min-h-[520px] flex-col rounded-3xl border border-gray-800 bg-gradient-to-b from-gray-900/80 to-black/70 p-6">
+      <div className="flex min-h-[520px] flex-col rounded-2xl border border-gray-800 bg-gradient-to-b from-gray-900/80 to-black/70 p-6">
         <p className="text-sm text-gray-400">
           Planning fastest, cheapest, and transfer-friendly paths...
         </p>
@@ -710,29 +721,35 @@ function RouteDetailPanel({ route, isLoading,  onBack  }) {
   const endStep = steps[steps.length - 1];
 
   return (
-    <div className="flex flex-col rounded-3xl border border-white/10 bg-black/50 p-6">
-      <button
-        className="mb-4 w-40 rounded-lg border border-white/20 px-4 py-2 text-sm text-gray-300 hover:border-white/50 hover:text-white"
-        onClick={onBack}
-      >
-        Back to routes
-      </button>
+    <div className="flex flex-col rounded-2xl border border-white/10 bg-black/50 p-6">
+      <div className="flex flex-col flex-wrap items-start justify-between gap-4">
+        <div className="flex items-start justify-between w-full">
+          {/* LEFT SIDE TEXT */}
+          <div>
+            <p className="text-xs uppercase tracking-[0.4em] text-[#32B67A]">
+              Step-by-step
+            </p>
+            <h2 className="my-1 text-2xl font-semibold">
+              {route.path_type || "Recommended route"}
+            </h2>
+            {/* <p className="text-sm text-gray-400">
+              {formatMetric(route.fare_total) ?? "--"} THB ·{" "}
+              {stats.total_stations ?? "--"} stations
+            </p> */}
+          </div>
 
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <p className="text-xs uppercase tracking-[0.4em] text-[#32B67A]">
-            Step-by-step
-          </p>
-          <h2 className="my-2 text-2xl font-semibold">
-            {route.path_type || "Recommended route"}
-          </h2>
-          <p className="text-sm text-gray-400">
-            {formatMetric(route.fare_total) ?? "--"} THB ·{" "}
-            {stats.total_stations ?? "--"} stations
-          </p>
+          {/* RIGHT SIDE BUTTON */}
+          <button
+            className="w-40 h-fit ml-auto rounded-lg border border-white/20 px-4 py-2 
+               text-sm text-gray-300 hover:border-white/50 hover:text-white"
+            onClick={onBack}
+          >
+            Back to routes
+          </button>
         </div>
+
         {startStep && endStep && (
-          <div className="text-right text-sm text-gray-300">
+          <div className="text-sm text-gray-300">
             <div>
               <p className="text-xs uppercase text-gray-500">From</p>
               <p className="font-semibold">
@@ -759,25 +776,31 @@ function RouteDetailPanel({ route, isLoading,  onBack  }) {
         )}
       </div>
 
-      <div className="mt-6 grid gap-3 text-sm text-gray-300 sm:grid-cols-3">
-        <div className="rounded-2xl bg-gray-900/50 border border-gray-800 p-3">
+      <div className="mt-6 grid gap-3 text-sm text-gray-300 sm:grid-cols-4">
+        <div className="rounded-lg bg-gray-900/50 border border-gray-800 p-3">
+          <p className="text-xs uppercase text-gray-500">Fare</p>
+          <p className="text-xl font-semibold mt-2">
+            {route.fare_total ?? "--"} THB
+          </p>
+        </div>
+        <div className="rounded-lg bg-gray-900/50 border border-gray-800 p-3">
           <p className="text-xs uppercase text-gray-500">Stations</p>
-          <p className="text-xl font-semibold">
+          <p className="text-xl font-semibold mt-2">
             {stats.total_stations ?? "--"}
           </p>
         </div>
-        <div className="rounded-2xl bg-gray-900/50 border border-gray-800 p-3">
+        <div className="rounded-lg bg-gray-900/50 border border-gray-800 p-3">
           <p className="text-xs uppercase text-gray-500">Transfers</p>
-          <p className="text-xl font-semibold">
+          <p className="text-xl font-semibold mt-2">
             {stats.total_transfers ?? "--"}
           </p>
         </div>
-        <div className="rounded-2xl bg-gray-900/50 border border-gray-800 p-3">
+        <div className="rounded-lg bg-gray-900/50 border border-gray-800 p-3">
           <p className="text-xs uppercase text-gray-500">Lines used</p>
-          <p className="text-xl font-semibold">{stats.total_lines ?? "--"}</p>
+          <p className="text-xl font-semibold mt-2">{stats.total_lines ?? "--"}</p>
         </div>
       </div>
-{/* bg-gradient-to-b from-[#32B67A]/70 to-transparent */}
+      {/* bg-gradient-to-b from-[#32B67A]/70 to-transparent */}
       <div
         className="mt-6 flex-1 space-y-5 overflow-y-auto pr-2 text-sm
         [&::-webkit-scrollbar]:w-2
@@ -801,7 +824,6 @@ function RouteDetailPanel({ route, isLoading,  onBack  }) {
                     {index + 1}
                   </span>
                   {index !== steps.length - 1 && (
-                    
                     <span className="mt-1 h-full w-px bg-[#32B67A]"></span>
                   )}
                 </div>
