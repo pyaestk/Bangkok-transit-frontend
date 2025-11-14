@@ -29,7 +29,7 @@ export default function Home() {
   return (
     <div className="w-full h-full max-w-7xl mx-auto text-white flex flex-col">
       <div className="w-full grid grid-cols-1 md:grid-cols-5 gap-5">
-        <div className="col-span-3 bg-gradient-to-b from-gray-900 to-gray-950 border border-gray-800 rounded-2xl shadow-lg p-6 md:p-10">
+        <div className="col-span-1 md:col-span-3 bg-gradient-to-b from-gray-900 to-gray-950 border border-gray-800 rounded-2xl shadow-lg p-6 md:p-10">
           <h1 className="text-3xl md:text-4xl font-bold mb-3">
             Navigate Bangkok smarter
           </h1>
@@ -40,7 +40,7 @@ export default function Home() {
           </p>
 
           {/* Tags */}
-          <div className="flex flex-wrap gap-2 mb-6">
+          <div className="flex flex-wrap gap-2 mb-6 uppercase tracking-[0.2em] text-xs">
             {[
               "Real-time style UI",
               "Mobile-first",
@@ -49,7 +49,7 @@ export default function Home() {
             ].map((t) => (
               <span
                 key={t}
-                className="px-3 py-1 text-xs rounded-full bg-white/5 border border-white/10"
+                className="px-3 py-1 text-xs rounded-lg bg-white/5 border border-white/10"
               >
                 {t}
               </span>
@@ -80,9 +80,11 @@ export default function Home() {
         </div>
 
         {/* Quick Planner */}
-        <div className="col-span-2 bg-gray-900/50 border border-gray-800 rounded-2xl shadow-lg p-6 flex flex-col justify-center">
+        <div className="col-span-1 md:col-span-2 bg-gray-900/50 border border-gray-800 rounded-2xl shadow-lg p-6 flex flex-col justify-center">
           <h3 className="text-lg font-semibold mb-4">Quick Planner</h3>
-
+          <p className="text-gray-400 text-xs mb-4 uppercase tracking-[0.2em]">
+            Plan Route
+          </p>
           <div className="flex flex-col gap-4 justify-center">
             {/* FROM */}
             <label className="block mx-1 text-sm">From</label>
@@ -261,7 +263,7 @@ export default function Home() {
 function StatBox({ label, value }) {
   return (
     <div className="bg-gray-900/50 border border-gray-800 rounded-2xl shadow-lg p-4 ">
-      <p className="text-gray-400 text-xs mb-1">{label}</p>
+      <p className="text-gray-400 text-xs mb-1 uppercase tracking-[0.2em]">{label}</p>
       <h2 className="text-xl font-bold">{value}</h2>
     </div>
   );

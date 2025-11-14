@@ -2,6 +2,11 @@ import React from "react";
 import { lineColors } from "../../utils/lineColors";
 
 export default function ResultView({ data, onBack }) {
+  const cleanText = (data.route_description || "").replace(
+    /[\u{1F600}-\u{1F64F}]|[\u{1F300}-\u{1F5FF}]|[\u{1F680}-\u{1F6FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]|[\u{1F900}-\u{1F9FF}]|[\u{1FA70}-\u{1FAFF}]/gu,
+    ""
+  );
+
   if (!data) {
     return <p className="text-gray-400 p-4">No route data available.</p>;
   }
@@ -30,43 +35,48 @@ export default function ResultView({ data, onBack }) {
         <div className="space-y-1">
           <p>
             <span className="text-gray-400">From:</span>{" "}
-            <strong>{data.route_steps[0].station.name} - {data.start_station_code}</strong>
+            <strong>
+              {data.route_steps[0].station.name} - {data.start_station_code}
+            </strong>
           </p>
           <p>
             <span className="text-gray-400">To:</span>{" "}
-            <strong>{data.route_steps[data.route_steps.length - 1].station.name} - {data.end_station_code}</strong>
+            <strong>
+              {data.route_steps[data.route_steps.length - 1].station.name} -{" "}
+              {data.end_station_code}
+            </strong>
           </p>
-          {(data.route_description || "").split(/\n|\\n/).map((line, i) => (
+
+          <div className="border-t border-white/10 my-2 mt-5"></div>
+
+          <div className="flex flex-wrap text-xs justify-between">
+            <div>
+              <span className="text-gray-400">Total Stations:</span>{" "}
+              {data.stats?.total_stations}
+            </div>
+            <div>
+              <span className="text-gray-400">Fare:</span> {data.fare_total} THB
+            </div>
+            <div>
+              <span className="text-gray-400">Transfers:</span>{" "}
+              {data.stats?.total_transfers}
+            </div>
+            <div>
+              <span className="text-gray-400">Lines:</span>{" "}
+              {data.stats?.total_lines}
+            </div>
+          </div>
+
+          <div className="border-t border-white/10 my-2 mb-5"></div>
+
+          {cleanText.split(/\n|\\n/).slice(1).map((line, i) => (
             <p key={i} className="text-gray-300 text-xs mt-3">
-              {line}
+              {i+1}. {line}
             </p>
           ))}
         </div>
 
-        <div className="border-t border-white/10 my-2"></div>
-
-        <div className="flex flex-wrap text-xs justify-between">
-          <div>
-            <span className="text-gray-400">Total Stations:</span>{" "}
-            {data.stats?.total_stations}
-          </div>
-          <div>
-            <span className="text-gray-400">Fare:</span>{" "}
-            {data.fare_total} THB
-          </div>
-          <div>
-            <span className="text-gray-400">Transfers:</span>{" "}
-            {data.stats?.total_transfers}
-          </div>
-          <div>
-            <span className="text-gray-400">Lines:</span>{" "}
-            {data.stats?.total_lines}
-          </div>
-        </div>
-
-        <div className="border-t border-white/10 my-2"></div>
-
-        <h3 className="font-semibold mb-2">Step-by-Step Route:</h3>
+        <h3 className="font-semibold mb-2 mt-6">Step-by-Step Route:</h3>
 
         <ul className="relative ml-3 border-l border-gray-600 space-y-4">
           {data.route_steps?.map((step, index) => (
@@ -90,7 +100,12 @@ export default function ResultView({ data, onBack }) {
                 {step.line && (
                   <span
                     className={`inline-block mt-1 w-fit px-2 py-0.5 rounded bg-gray-700 text-[10px] ${
-                      step.line === "MRT Yellow Line Monorail" || step.line == "MRT Pink Line Monorail" || step.line == "BTS Gold Line" || step.line == "BTS Sukhumvit Line" ? "text-black" : "text-white"
+                      step.line === "MRT Yellow Line Monorail" ||
+                      step.line == "MRT Pink Line Monorail" ||
+                      step.line == "BTS Gold Line" ||
+                      step.line == "BTS Sukhumvit Line"
+                        ? "text-black"
+                        : "text-white"
                     }`}
                     style={{
                       backgroundColor: lineColors[step.line] || "#32B67A",

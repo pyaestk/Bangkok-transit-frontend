@@ -1,6 +1,6 @@
 // src/pages/TrainRoutes.jsx
 import { useNavigate } from "react-router-dom";
-import { lineColors } from "../utils/lineColors"; 
+import { lineColors } from "../utils/lineColors";
 
 const LINES = {
   BTS: [
@@ -24,6 +24,30 @@ const LINES = {
       sub: "Krung Thonburi ⇄ Khlong San",
       lineId: null,
       lineName: "BTS Gold Line",
+    },
+  ],
+
+  SRT: [
+    {
+      key: "srt-light-red",
+      label: "SRT Light Red Line",
+      sub: "Taling Chan ⇄ Bang Sue",
+      lineId: null,
+      lineName: "SRT Light Red Line",
+    },
+    {
+      key: "srt-dark-red",
+      label: "SRT Dark Red Line",
+      sub: "Bang Sue ⇄ Rangsit",
+      lineId: null,
+      lineName: "SRT Dark Red Line",
+    },
+    {
+      key: "arl",
+      label: "Airport Rail Link",
+      sub: "Phaya Thai ⇄ Suvarnabhumi",
+      lineId: null,
+      lineName: "Airport Rail Link",
     },
   ],
 
@@ -56,37 +80,6 @@ const LINES = {
       lineId: null,
       lineName: "MRT Pink Line Monorail",
     },
-    {
-      key: "mrt-orange",
-      label: "MRT Orange Line",
-      sub: "Thailand Cultural Centre ⇄ Min Buri (partial)",
-      lineId: null,
-      lineName: "MRT Orange Line",
-    },
-  ],
-
-  SRT: [
-    {
-      key: "srt-light-red",
-      label: "SRT Light Red Line",
-      sub: "Taling Chan ⇄ Bang Sue",
-      lineId: null,
-      lineName: "SRT Light Red Line",
-    },
-    {
-      key: "srt-dark-red",
-      label: "SRT Dark Red Line",
-      sub: "Bang Sue ⇄ Rangsit",
-      lineId: null,
-      lineName: "SRT Dark Red Line",
-    },
-    {
-      key: "arl",
-      label: "Airport Rail Link",
-      sub: "Phaya Thai ⇄ Suvarnabhumi",
-      lineId: null,
-      lineName: "Airport Rail Link",
-    },
   ],
 };
 
@@ -99,17 +92,16 @@ function LineCard({ title, items }) {
     });
   }
 
-
   return (
     <div className="rounded-2xl bg-gray-900/50 border border-gray-800 p-3 shadow-lg">
-      <h3 className="text-gray-200 font-semibold mb-3">{title}</h3>
+      <h3 className="text-gray-200 font-semibold mb-3 ms-1">{title}</h3>
       <div className="space-y-3">
         {items.map((ln) => (
           <div
             key={ln.key}
-            className="flex items-center justify-between bg-black/30 border border-gray-800 rounded-xl px-4 py-3"
+            className="flex items-center justify-between px-2 py-2"
           >
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-5">
               {/* Color indicator */}
               <div
                 className="w-4.5 h-2.5 rounded-full border border-white/20"
@@ -146,25 +138,70 @@ export default function TrainRoutes() {
         <LineCard title="BTS" items={LINES.BTS} />
         <LineCard title="SRT & Airport" items={LINES.SRT} />
         <LineCard title="MRT" items={LINES.MRT} />
-        
-        <div className="rounded-2xl bg-black/30 border border-gray-800 p-4 shadow-lg">
-          <h3 className="text-gray-200 font-semibold mb-3">Quick Actions</h3>
-          <p className="text-gray-400 text-sm mb-4">
-            Open a line to see station list and jump to the planner.
-          </p>
-          <div className="flex items-center gap-3">
-            <a
-              href="/planner"
-              className="px-3 py-1.5 rounded-lg border border-gray-700 text-gray-200 hover:bg-gray-800"
-            >
-              Plan a trip
-            </a>
-            <a
-              href="/map"
-              className="px-3 py-1.5 rounded-lg border border-gray-700 text-gray-200 hover:bg-gray-800"
-            >
-              Open Map
-            </a>
+
+        <div className="rounded-2xl bg-gray-900/50 border border-gray-800 p-3 shadow-lg">
+          <h3 className="text-gray-200 font-semibold mb-3 ms-1">
+            Upcoming Routes
+          </h3>
+          {/* <p className="text-gray-400 text-sm mb-4 ms-1">
+            Lines expected to open in the coming years.
+          </p> */}
+          <div className="space-y-3">
+            {/* Purple Line Extension */}
+            <div className="flex items-center justify-between px-2 py-2">
+              <div className="flex items-center gap-5">
+                <div
+                  className="w-4.5 h-2.5 rounded-full border border-white/20"
+                  style={{ backgroundColor: "#8e44ad" }}
+                ></div>
+                <div className="text-gray-100 text-sm">
+                  MRT Purple Line Extension
+                  <div className="text-gray-400 text-xs mt-">* 2029</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Orange Line */}
+            <div className="flex items-center justify-between px-2 py-2">
+              <div className="flex items-center gap-5">
+                <div
+                  className="w-4.5 h-2.5 rounded-full border border-white/20"
+                  style={{ backgroundColor: "#e67e22" }}
+                ></div>
+                <div className="text-gray-100 text-sm">
+                  MRT Orange Line
+                  <div className="text-gray-400 text-xs">* 2028 / 2030</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Brown Line Monorail */}
+            <div className="flex items-center justify-between px-2 py-2">
+              <div className="flex items-center gap-5">
+                <div
+                  className="w-4.5 h-2.5 rounded-full border border-white/20"
+                  style={{ backgroundColor: "#764B27" }} // brown
+                ></div>
+                <div className="text-gray-100 text-sm">
+                  MRT Brown Line (Khae Rai ⇄ Lam Sali)
+                  <div className="text-gray-400 text-xs">* TBA</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Grey Line */}
+            <div className="flex items-center justify-between px-2 py-2">
+              <div className="flex items-center gap-5">
+                <div
+                  className="w-4.5 h-2.5 rounded-full border border-white/20"
+                  style={{ backgroundColor: "#95a5a6" }} // grey
+                ></div>
+                <div className="text-gray-100 text-sm">
+                  MRT Grey Line (Watcharaphon ⇄ Thong Lo)
+                  <div className="text-gray-400 text-xs">* TBA</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

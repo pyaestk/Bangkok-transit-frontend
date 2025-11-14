@@ -76,17 +76,17 @@ export default function Stations() {
       </div>
 
       {/* Right Result Box */}
-      <div className="flex-1 rounded-2xl bg-gray-900/50 border border-gray-800 shadow-lg h-[83vh] p-4 text-white flex flex-col">
-        <h2 className="text-lg font-bold mb-3">Stations</h2>
+      <div className="flex-1 rounded-2xl bg-gray-900/40 border border-gray-800/60 shadow-lg h-[83vh] p-2 text-white flex flex-col">
+        <h2 className="text-lg font-bold mb-4 px-3 pt-1">Stations</h2>
 
         <div
-          className="flex-1 overflow-y-auto rounded-xl border border-white/10 p-3 bg-black/25 backdrop-blur-sm h-full
-          [&::-webkit-scrollbar]:w-2
-          [&::-webkit-scrollbar-track]:rounded-full
-          [&::-webkit-scrollbar-track]:bg-gray-700/40
-          [&::-webkit-scrollbar-thumb]:rounded-full
-          [&::-webkit-scrollbar-thumb]:bg-[#32B67A]/70
-          hover:[&::-webkit-scrollbar-thumb]:bg-[#32B67A]"
+          className="flex-1 overflow-y-auto pr-2 rounded-2xl bg-black/30 border border-gray-800/60 shadow-lg
+      [&::-webkit-scrollbar]:w-2
+      [&::-webkit-scrollbar-track]:rounded-full
+      [&::-webkit-scrollbar-track]:bg-gray-700/40
+      [&::-webkit-scrollbar-thumb]:rounded-full
+      [&::-webkit-scrollbar-thumb]:bg-[#32B67A]/70
+      hover:[&::-webkit-scrollbar-thumb]:bg-[#32B67A"
         >
           {isLoading && (
             <div className="flex flex-col items-center justify-center h-full text-center">
@@ -113,37 +113,38 @@ export default function Stations() {
                   No stations match your filter.
                 </p>
               ) : (
-                <ul className="space-y-2">
+                <ul className="">
                   {filteredStations.map((station) => (
                     <li
                       key={station.station_code}
-                      className="flex items-center justify-between p-3 rounded-lg bg-black/30 border border-white/10 hover:bg-black/10 hover:border-[#32B67A]  transition"
+                      className="flex ms-2 items-center justify-between py-3 transition rounded-lg px-1"
                     >
-                      {/* Line color indicator */}
-                      <div
-                        className="w-3.5 h-2 rounded-full border border-white/20 mr-3 flex-shrink-0"
-                        style={{
-                          backgroundColor:
-                            lineColors[station.line?.name_en] || "#999",
-                        }}
-                        title={station.line?.name_en}
-                      ></div>
+                      {/* Left side info */}
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div
+                          className="w-3.5 h-2 rounded-full border border-white/20 flex-shrink-0"
+                          style={{
+                            backgroundColor:
+                              lineColors[station.line?.name_en] || "#999",
+                          }}
+                        ></div>
 
-                      {/* Station info */}
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-white truncate">
-                          {station.name_en}
-                        </p>
-                        <p className="text-xs text-gray-400 truncate">
-                          {station.line?.name_en} – {station.station_code}
-                        </p>
+                        <div className="min-w-0">
+                          <p className="font-medium text-white truncate">
+                            {station.name_en}
+                          </p>
+                          <p className="text-xs text-gray-400 truncate mt-1">
+                            {station.line?.name_en} ({station.station_code})
+                          </p>
+                        </div>
                       </div>
 
-                      {/* Action buttons */}
+                      {/* Right action buttons */}
                       <div className="flex gap-2 flex-shrink-0">
-                        <button 
+                        <button
                           onClick={() => openStationMap(station)}
-                          className="px-2 py-1 text-xs border border-gray-700 text-gray-200 hover:bg-gray-800 rounded">
+                          className="px-2 py-1 text-xs border border-gray-700 text-gray-200 hover:bg-gray-800 rounded"
+                        >
                           Map
                         </button>
                         <button
