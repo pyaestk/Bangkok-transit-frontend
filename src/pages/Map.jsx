@@ -221,9 +221,10 @@ export default function Map() {
     return <div className="text-red-400 p-4">Failed to load: {error}</div>;
 
   return (
-    <div className="flex flex-col sm:flex-row gap-5 text-white w-full max-w-7xl mx-auto">
+    <div className="flex flex-col lg:flex-row gap-5 text-white w-full max-w-7xl mx-auto">
+
       {/* Sidebar */}
-      <div className="w-full md:w-100">
+      <div className="w-full lg:w-100 mx-auto">
         <TripPlannerBox
           selectedStartStation={effectiveStartStation}
           selectedTargetStation={effectiveTargetStation}
@@ -236,7 +237,7 @@ export default function Map() {
       </div>
 
       {/* Map */}
-      <div className="relative border border-white/10 h-[83vh] w-full flex-1 rounded-2xl bg-gradient-to-b from-gray-800 to-gray-900 shadow-lg text-white">
+      <div className="relative border border-white/10  aspect-square sm:aspect-auto sm:h-[83vh] w-full flex-1 rounded-2xl bg-gradient-to-b from-gray-800 to-gray-900 shadow-lg text-white">
         <div className="bg-white rounded-lg h-full flex items-center justify-center overflow-hidden relative">
           {/* --- Dim overlay when route is shown --- */}
           {routeStations.length > 0 && (

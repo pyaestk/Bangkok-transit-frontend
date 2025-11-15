@@ -5,6 +5,8 @@ import {
   Smartphone,
   Database,
   Users,
+  HardDrive,
+  SquareChartGantt
 } from "lucide-react";
 
 export default function About() {
@@ -137,7 +139,7 @@ export default function About() {
         <details className="group border border-white/10 rounded-xl bg-white/5 p-4 transition hover:bg-white/10">
           <summary className="cursor-pointer font-medium text-lg text-white flex justify-between items-center">
             <span className="flex items-center gap-2">
-              <Database size={18} /> Data Sources
+              <SquareChartGantt size={18} /> Future Plan
             </span>
             <span className="transition-transform group-open:rotate-90">›</span>
           </summary>

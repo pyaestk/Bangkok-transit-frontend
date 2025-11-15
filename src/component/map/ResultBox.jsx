@@ -49,7 +49,7 @@ export default function ResultView({ data, onBack }) {
 
           <div className="border-t border-white/10 my-2 mt-5"></div>
 
-          <div className="flex flex-wrap text-xs justify-between">
+          <div className="flex flex-wrap text-xs justify-evenly">
             <div>
               <span className="text-gray-400">Total Stations:</span>{" "}
               {data.stats?.total_stations}
