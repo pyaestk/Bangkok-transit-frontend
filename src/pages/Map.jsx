@@ -227,8 +227,11 @@ export default function Map() {
         <TripPlannerBox
           selectedStartStation={effectiveStartStation}
           selectedTargetStation={effectiveTargetStation}
+          fromNavigation={!!(navStartCode && navTargetCode)}
           onPathStations={setRouteStations}
           resetTrigger={resetTrigger}
+          onStartChange={setStartStation}       
+          onTargetChange={setTargetStation}
         />
       </div>
 
