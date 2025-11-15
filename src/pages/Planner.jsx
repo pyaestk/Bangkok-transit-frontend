@@ -717,6 +717,13 @@ function RouteDetailPanel({ route, isLoading,  onBack  }) {
   if (!route) {
     return (
       <div className="flex min-h-[520px] flex-col rounded-3xl border border-white/10 bg-gradient-to-b from-gray-900/80 to-black/70 p-6">
+        <button
+            className="w-40 h-fit ml-auto rounded-lg border border-white/20 px-4 py-2 
+               text-sm text-gray-300 hover:border-white/50 hover:text-white"
+            onClick={onBack}
+          >
+            Back to routes
+          </button>
         <h2 className="text-2xl font-semibold">Step-by-step guidance</h2>
         <p className="mt-3 text-sm text-gray-400">
           Choose a start and destination to see the detailed instructions,
