@@ -10,8 +10,11 @@ import AllRoutesBox from "./AllRoutesBox.jsx";
 export default function TripPlannerBox({
   selectedStartStation,
   selectedTargetStation,
+  fromNavigation,
   resetTrigger,
   onPathStations,
+  onStartChange,      
+  onTargetChange,
 }) {
   const [startStation, setStartStation] = useState("");
   const [startStationCode, setStartStationCode] = useState("");
@@ -33,27 +36,28 @@ export default function TripPlannerBox({
   const targetRef = useRef(null);
 
   // Hooks for each API
-  const { 
-    pathData: shortestData, 
-    isLoading: isShortestLoading, 
-    error: shortestError, 
-    getShortestPath, 
-    resetPath: shortestReset 
+  const {
+    pathData: shortestData,
+    isLoading: isShortestLoading,
+    error: shortestError,
+    getShortestPath,
+    resetPath: shortestReset,
   } = useShortestPath();
 
-  const { pathData: cheapestData, 
-    isLoading: isCheapestLoading, 
-    error: cheapestError, 
-    getCheapestPath, 
-    resetPath: cheapestReset 
+  const {
+    pathData: cheapestData,
+    isLoading: isCheapestLoading,
+    error: cheapestError,
+    getCheapestPath,
+    resetPath: cheapestReset,
   } = useCheapestPath();
 
-  const { 
-    pathData: allData, 
-    isLoading: isAllLoading, 
-    error: allError, 
-    getAllPaths, 
-    resetPath: allReset 
+  const {
+    pathData: allData,
+    isLoading: isAllLoading,
+    error: allError,
+    getAllPaths,
+    resetPath: allReset,
   } = useAllPaths();
 
   const isAllRoutesMode = preference === "All Routes";
@@ -81,11 +85,16 @@ export default function TripPlannerBox({
     const value = e.target.value;
     setFilteredStart(
       value.trim()
-        ? stations.filter(
-            (s) =>
-              s.name_en.trim().toLowerCase().includes(value.toLowerCase()) ||
-              s.station_code.trim().toLowerCase().includes(value.toLowerCase())
-          ).slice(0, 10)
+        ? stations
+            .filter(
+              (s) =>
+                s.name_en.trim().toLowerCase().includes(value.toLowerCase()) ||
+                s.station_code
+                  .trim()
+                  .toLowerCase()
+                  .includes(value.toLowerCase())
+            )
+            .slice(0, 10)
         : []
     );
     setStartStation(value);
@@ -95,11 +104,13 @@ export default function TripPlannerBox({
     const value = e.target.value;
     setFilteredTarget(
       value.trim()
-        ? stations.filter(
-            (s) =>
-              s.name_en.toLowerCase().includes(value.toLowerCase()) ||
-              s.station_code.toLowerCase().includes(value.toLowerCase())
-          ).slice(0, 10)
+        ? stations
+            .filter(
+              (s) =>
+                s.name_en.toLowerCase().includes(value.toLowerCase()) ||
+                s.station_code.toLowerCase().includes(value.toLowerCase())
+            )
+            .slice(0, 10)
         : []
     );
     setTargetStation(value);
@@ -109,12 +120,14 @@ export default function TripPlannerBox({
     setStartStation(station.name_en);
     setStartStationCode(station.station_code);
     setFilteredStart([]);
+    onStartChange?.(station);
   };
 
   const handleSelectTarget = (station) => {
     setTargetStation(station.name_en);
     setTargetStationCode(station.station_code);
     setFilteredTarget([]);
+    onTargetChange?.(station);
   };
 
   // Sync map clicks
@@ -133,31 +146,27 @@ export default function TripPlannerBox({
   }, [selectedTargetStation]);
 
   // Auto-plan route when coming from navigation
-// Auto-plan only after states are fully updated
-useEffect(() => {
-  if (
-    selectedStartStation &&
-    selectedTargetStation &&
-    startStationCode &&
-    targetStationCode &&
-    !hasPlannedRoute
-  ) {
-    setHasPlannedRoute(true);
-
-    // Run plan AFTER state is stable
-    setTimeout(() => {
-      handlePlanRoute();
-    }, 150);
-  }
-}, [
-  selectedStartStation,
-  selectedTargetStation,
-  startStationCode,
-  targetStationCode,
-  hasPlannedRoute,
-]);
-
-
+  useEffect(() => {
+    if (
+      fromNavigation && // ⬅ only auto-plan when TRUE
+      selectedStartStation &&
+      selectedTargetStation &&
+      startStationCode &&
+      targetStationCode &&
+      !hasPlannedRoute
+    ) {
+      setTimeout(() => {
+        handlePlanRoute();
+      }, 150);
+    }
+  }, [
+    fromNavigation, // ⬅ add this
+    selectedStartStation,
+    selectedTargetStation,
+    startStationCode,
+    targetStationCode,
+    hasPlannedRoute,
+  ]);
 
   // Plan route handler
   const handlePlanRoute = async () => {
@@ -189,9 +198,13 @@ useEffect(() => {
       setSelectedRoute(activeData);
       onPathStations?.(activeData.stations || []);
     }
-  }, [hasPlannedRoute, preference, shortestData, cheapestData, isAllRoutesMode]);
-
-
+  }, [
+    hasPlannedRoute,
+    preference,
+    shortestData,
+    cheapestData,
+    isAllRoutesMode,
+  ]);
 
   useEffect(() => {
     if (isAllRoutesMode && allData?.data) {
@@ -220,11 +233,8 @@ useEffect(() => {
     }
   };
 
-
-  const isLoading =
-    isShortestLoading || isCheapestLoading || isAllLoading;
-  const error =
-    shortestError || cheapestError || allError;
+  const isLoading = isShortestLoading || isCheapestLoading || isAllLoading;
+  const error = shortestError || cheapestError || allError;
 
   return (
     <div className="bg-gray-900/50 border border-gray-800 rounded-2xl shadow-lg w-full max-h-[83vh] text-white flex flex-col transition-all duration-300">
