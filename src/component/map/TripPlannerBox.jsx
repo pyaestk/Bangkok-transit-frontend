@@ -68,6 +68,7 @@ export default function TripPlannerBox({
     setShowResult(false);
     setSelectedRoute(null);
     setRoutes([]);
+    setHasPlannedRoute(false);
 
     shortestReset?.();
     cheapestReset?.();
@@ -130,6 +131,33 @@ export default function TripPlannerBox({
       setTargetStationCode(selectedTargetStation.station_code || "");
     }
   }, [selectedTargetStation]);
+
+  // Auto-plan route when coming from navigation
+// Auto-plan only after states are fully updated
+useEffect(() => {
+  if (
+    selectedStartStation &&
+    selectedTargetStation &&
+    startStationCode &&
+    targetStationCode &&
+    !hasPlannedRoute
+  ) {
+    setHasPlannedRoute(true);
+
+    // Run plan AFTER state is stable
+    setTimeout(() => {
+      handlePlanRoute();
+    }, 150);
+  }
+}, [
+  selectedStartStation,
+  selectedTargetStation,
+  startStationCode,
+  targetStationCode,
+  hasPlannedRoute,
+]);
+
+
 
   // Plan route handler
   const handlePlanRoute = async () => {

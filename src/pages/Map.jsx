@@ -28,7 +28,6 @@ export default function Map() {
   const [resetTrigger, setResetTrigger] = useState(0);
 
   const [showHelp, setShowHelp] = useState(false);
-  
 
   // for Size of Map Picture
   const ORIGINAL_WIDTH = 841.89;
@@ -44,6 +43,45 @@ export default function Map() {
       setYRatio(actualHeight / ORIGINAL_HEIGHT);
     }
   };
+
+  const location = useLocation();
+
+  // Accept From Home (obj fields)
+  const startStationCodeFromNav =
+    location?.state?.startStationCode || location?.state?.startStation || null;
+
+  const startStationNameFromNav = location?.state?.startStationName || "";
+
+  // Accept From Home OR Station page
+  const targetStationCodeFromNav =
+    location?.state?.targetStationCode ||
+    location?.state?.targetStation ||
+    null;
+
+  const targetStationNameFromNav = location?.state?.targetStationName || "";
+
+  // Only from Stations page (highlight a station)
+  const showStationCodeFromNav = location?.state?.showStation || null;
+
+  const [navStartCode, setNavStartCode] = useState(startStationCodeFromNav);
+  const [navTargetCode, setNavTargetCode] = useState(targetStationCodeFromNav);
+
+  const effectiveStartStation = useMemo(() => {
+    if (startStation) return startStation;
+    return stations.find((s) => s.station_code === navStartCode) || null;
+  }, [startStation, navStartCode, stations]);
+
+  const effectiveTargetStation = useMemo(() => {
+    if (targetStation) return targetStation;
+    return stations.find((s) => s.station_code === navTargetCode) || null;
+  }, [targetStation, navTargetCode, stations]);
+
+  const showStation = useMemo(() => {
+    if (!showStationCodeFromNav) return null;
+    return (
+      stations.find((s) => s.station_code === showStationCodeFromNav) || null
+    );
+  }, [showStationCodeFromNav, stations]);
 
   // --- Wait for the image to load ---
   useEffect(() => {
@@ -80,9 +118,16 @@ export default function Map() {
     setIsAnimating(false);
     setActiveIndex(-1);
     setRouteStations([]);
+
+    // Completely clear selections
     setStartStation(null);
     setTargetStation(null);
+
+    // Allow planner to clear
     setResetTrigger((prev) => prev + 1);
+
+    setNavStartCode(null);
+    setNavTargetCode(null);
   };
 
   useEffect(() => {
@@ -143,31 +188,20 @@ export default function Map() {
     }, 300);
   };
 
-  const location = useLocation();
-  const startStationCodeFromNav = location?.state?.startStation || null;
-  const targetStationCodeFromNav = location?.state?.targetStation || null;
-  const showStationCodeFromNav = location?.state?.showStation || null;
+  // Auto-apply start station from navigation
+  useEffect(() => {
+    if (navStartCode) {
+      const s = stations.find((st) => st.station_code === navStartCode);
+      if (s) setStartStation(s);
+    }
+  }, [navStartCode, stations]);
 
-  const effectiveStartStation = useMemo(() => {
-    if (startStation) return startStation;
-    return (
-      stations.find((s) => s.station_code === startStationCodeFromNav) || null
-    );
-  }, [startStation, startStationCodeFromNav, stations]);
-
-  const effectiveTargetStation = useMemo(() => {
-    if (targetStation) return targetStation;
-    return (
-      stations.find((s) => s.station_code === targetStationCodeFromNav) || null
-    );
-  }, [targetStation, targetStationCodeFromNav, stations]);
-
-  const showStation = useMemo(() => {
-    if (!showStationCodeFromNav) return null;
-    return (
-      stations.find((s) => s.station_code === showStationCodeFromNav) || null
-    );
-  }, [showStationCodeFromNav, stations]);
+  useEffect(() => {
+    if (navTargetCode) {
+      const s = stations.find((st) => st.station_code === navTargetCode);
+      if (s) setTargetStation(s);
+    }
+  }, [navTargetCode, stations]);
 
   useEffect(() => {
     if (showStation) {
