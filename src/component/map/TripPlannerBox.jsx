@@ -68,6 +68,7 @@ export default function TripPlannerBox({
     setShowResult(false);
     setSelectedRoute(null);
     setRoutes([]);
+    setHasPlannedRoute(false);
 
     shortestReset?.();
     cheapestReset?.();

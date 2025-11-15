@@ -5,8 +5,9 @@ import { useNavigate } from "react-router-dom";
 
 export default function Home() {
   const navigate = useNavigate();
-  const [quickFrom, setQuickFrom] = useState("");
-  const [quickTo, setQuickTo] = useState("");
+const [quickFrom, setQuickFrom] = useState({ code: "", name: "" });
+const [quickTo, setQuickTo] = useState({ code: "", name: "" });
+
 
   const { stations } = useStations();
 
@@ -87,10 +88,10 @@ export default function Home() {
             <label className="block text-sm">From</label>
             <div className="relative">
               <input
-                value={quickFrom}
+                value={quickFrom.name}
                 onChange={(e) => {
                   const value = e.target.value;
-                  setQuickFrom(value);
+                  setQuickFrom({ ...quickFrom, name: value });
                   setSuggestStart(getSuggestions(value));
                 }}
                 placeholder="E.g., Siam"
@@ -117,7 +118,10 @@ export default function Home() {
                     <li
                       key={station.station_code}
                       onClick={() => {
-                        setQuickFrom(station.name_en);
+                        setQuickFrom({
+                          code: station.station_code,
+                          name: station.name_en,
+                        });
                         setSuggestStart([]);
                       }}
                       className="px-4 py-2 cursor-pointer hover:bg-white/10 text-sm flex justify-between"
@@ -136,10 +140,10 @@ export default function Home() {
             <label className="block text-sm">To</label>
             <div className="relative">
               <input
-                value={quickTo}
+                value={quickTo.name}
                 onChange={(e) => {
                   const value = e.target.value;
-                  setQuickTo(value);
+                  setQuickTo({ ...quickTo, name: value });
                   setSuggestEnd(getSuggestions(value));
                 }}
                 placeholder="E.g., Mo Chit"
@@ -166,7 +170,10 @@ export default function Home() {
                     <li
                       key={station.station_code}
                       onClick={() => {
-                        setQuickTo(station.name_en);
+                        setQuickTo({
+                          code: station.station_code,
+                          name: station.name_en,
+                        });
                         setSuggestEnd([]);
                       }}
                       className="px-4 py-2 cursor-pointer hover:bg-white/10 text-sm flex justify-between"
@@ -187,8 +194,10 @@ export default function Home() {
               onClick={() =>
                 navigate("/planner", {
                   state: {
-                    from: quickFrom,
-                    to: quickTo,
+                    from_code: quickFrom.code,
+                    from_name: quickFrom.name,
+                    to_code: quickTo.code,
+                    to_name: quickTo.name,
                   },
                 })
               }
@@ -201,8 +210,10 @@ export default function Home() {
               onClick={() =>
                 navigate("/map", {
                   state: {
-                    startStation: quickFrom, // or station_code if preferred
-                    targetStation: quickTo,
+                    startStationCode: quickFrom.code,
+                    startStationName: quickFrom.name,
+                    targetStationCode: quickTo.code,
+                    targetStationName: quickTo.name,
                   },
                 })
               }

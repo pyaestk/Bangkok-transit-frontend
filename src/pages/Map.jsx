@@ -45,6 +45,53 @@ export default function Map() {
     }
   };
 
+    const location = useLocation();
+  const [navApplied, setNavApplied] = useState(false);
+
+// Accept From Home (obj fields)
+const startStationCodeFromNav =
+  location?.state?.startStationCode ||
+  location?.state?.startStation ||
+  null;
+
+const startStationNameFromNav =
+  location?.state?.startStationName || "";
+
+// Accept From Home OR Station page
+const targetStationCodeFromNav =
+  location?.state?.targetStationCode ||
+  location?.state?.targetStation ||
+  null;
+
+const targetStationNameFromNav =
+  location?.state?.targetStationName || "";
+
+// Only from Stations page (highlight a station)
+const showStationCodeFromNav =
+  location?.state?.showStation || null;
+
+  
+  const effectiveStartStation = useMemo(() => {
+    if (startStation) return startStation;
+    return (
+      stations.find((s) => s.station_code === startStationCodeFromNav) || null
+    );
+  }, [startStation, startStationCodeFromNav, stations]);
+
+  const effectiveTargetStation = useMemo(() => {
+    if (targetStation) return targetStation;
+    return (
+      stations.find((s) => s.station_code === targetStationCodeFromNav) || null
+    );
+  }, [targetStation, targetStationCodeFromNav, stations]);
+
+  const showStation = useMemo(() => {
+    if (!showStationCodeFromNav) return null;
+    return (
+      stations.find((s) => s.station_code === showStationCodeFromNav) || null
+    );
+  }, [showStationCodeFromNav, stations]);
+
   // --- Wait for the image to load ---
   useEffect(() => {
     const img = imgRef.current;
@@ -80,9 +127,17 @@ export default function Map() {
     setIsAnimating(false);
     setActiveIndex(-1);
     setRouteStations([]);
+
+    // Completely clear selections
     setStartStation(null);
     setTargetStation(null);
-    setResetTrigger((prev) => prev + 1);
+
+    // Allow planner to clear
+    setResetTrigger(prev => prev + 1);
+
+    // Prevent auto-apply from navigation after reset
+    setNavApplied(true);
+    
   };
 
   useEffect(() => {
@@ -143,31 +198,34 @@ export default function Map() {
     }, 300);
   };
 
-  const location = useLocation();
-  const startStationCodeFromNav = location?.state?.startStation || null;
-  const targetStationCodeFromNav = location?.state?.targetStation || null;
-  const showStationCodeFromNav = location?.state?.showStation || null;
 
-  const effectiveStartStation = useMemo(() => {
-    if (startStation) return startStation;
-    return (
-      stations.find((s) => s.station_code === startStationCodeFromNav) || null
-    );
-  }, [startStation, startStationCodeFromNav, stations]);
 
-  const effectiveTargetStation = useMemo(() => {
-    if (targetStation) return targetStation;
-    return (
-      stations.find((s) => s.station_code === targetStationCodeFromNav) || null
-    );
-  }, [targetStation, targetStationCodeFromNav, stations]);
+// Auto-apply start station from navigation
+// Apply navigation values ONLY once
+useEffect(() => {
+  if (!navApplied && effectiveStartStation) {
+    setStartStation({
+      name_en: effectiveStartStation.name_en,
+      station_code: effectiveStartStation.station_code,
+      id: effectiveStartStation.id,
+    });
+    setNavApplied(true);
+  }
+}, [effectiveStartStation, navApplied]);
 
-  const showStation = useMemo(() => {
-    if (!showStationCodeFromNav) return null;
-    return (
-      stations.find((s) => s.station_code === showStationCodeFromNav) || null
-    );
-  }, [showStationCodeFromNav, stations]);
+useEffect(() => {
+  if (!navApplied && effectiveTargetStation) {
+    setTargetStation({
+      name_en: effectiveTargetStation.name_en,
+      station_code: effectiveTargetStation.station_code,
+      id: effectiveTargetStation.id,
+    });
+    setNavApplied(true);
+  }
+}, [effectiveTargetStation, navApplied]);
+
+
+
 
   useEffect(() => {
     if (showStation) {

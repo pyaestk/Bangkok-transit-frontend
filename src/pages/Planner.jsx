@@ -90,27 +90,39 @@ export default function Planner() {
   const [showDetailsOnly, setShowDetailsOnly] = useState(false);
 
   const location = useLocation();
-  const prefillFrom = location.state?.from || "";
-  const prefillTo = location.state?.to || "";
+  const prefillFromName = location.state?.from_name || "";
+  const prefillFromCode = location.state?.from_code || "";
+
+  const prefillToName = location.state?.to_name || "";
+  const prefillToCode = location.state?.to_code || "";
 
   useEffect(() => {
-    if (prefillFrom) setStartInput(prefillFrom);
-    if (prefillTo) setTargetInput(prefillTo);
-  }, [prefillFrom, prefillTo]);
+    if (prefillFromName) {
+      setStartInput(prefillFromName);
+      setStartStationCode(prefillFromCode);
+    }
+    if (prefillToName) {
+      setTargetInput(prefillToName);
+      setTargetStationCode(prefillToCode);
+    }
+  }, [prefillFromName, prefillFromCode, prefillToName, prefillToCode]);
 
-  useEffect(() => {
-  if (prefillFrom) {
-    setFilteredStart(getSuggestions(prefillFrom));
-  }
-  if (prefillTo) {
-    setFilteredTarget(getSuggestions(prefillTo));
-  }
-}, [stations]);
 useEffect(() => {
-  if (prefillFrom && prefillTo && stations.length > 0) {
+  if (prefillFromName) {
+    setFilteredStart(getSuggestions(prefillFromName));
+  }
+  if (prefillToName) {
+    setFilteredTarget(getSuggestions(prefillToName));
+  }
+}, [stations, prefillFromName, prefillToName]);
+
+
+useEffect(() => {
+  if (prefillFromCode && prefillToCode && stations.length > 0) {
     handlePlanRoutes();
   }
-}, [prefillFrom, prefillTo, stations]);
+}, [prefillFromCode, prefillToCode, stations]);
+
 
 
 
