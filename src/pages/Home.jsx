@@ -55,25 +55,25 @@ const [quickTo, setQuickTo] = useState({ code: "", name: "" });
           </div>
 
           {/* Buttons */}
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-3 ">
             <button
               onClick={() => navigate("/map")}
-              className="px-5 py-2 rounded-lg bg-[#32B67A] hover:bg-[#2acc83] text-black font-semibold shadow-md"
+              className="text-sm md:text-lg px-4 py-2 rounded-lg bg-[#32B67A] hover:bg-[#2acc83] text-white font-semibold shadow-md"
             >
               View Network Map
             </button>
             <button
               onClick={() => navigate("/planner")}
-              className="px-5 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10"
+              className="px-3 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10"
             >
               View Trip Planner
             </button>
-            <button
+            {/* <button
               onClick={() => navigate("/routes")}
               className="px-5 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10"
             >
               View Routes
-            </button>
+            </button> */}
           </div>
         </div>
 
